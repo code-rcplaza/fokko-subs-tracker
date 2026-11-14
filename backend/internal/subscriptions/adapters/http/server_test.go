@@ -84,8 +84,10 @@ func handlersOver(db *sql.DB, responder httpserver.Responder) Handlers {
 		Lines: lines, Decisions: decisions, Aliases: aliases, Rates: subsqlite.NewExchangeRates(db),
 		KeptRises: keptRises, Manuals: manuals, Overrides: overrides, Hidden: hidden, Cancellations: cancellations,
 	}
+	summary := usecases.NewGetSummary(sources)
 	return Handlers{
-		Summary:             usecases.NewGetSummary(sources),
+		Summary:             summary,
+		LineDetail:          usecases.NewGetLineDetail(summary),
 		Decide:              usecases.NewDecidePossibleSubscription(lines, decisions),
 		UndoDecision:        usecases.NewUndoDecision(decisions),
 		NameLine:            usecases.NewNameLine(lines, aliases),

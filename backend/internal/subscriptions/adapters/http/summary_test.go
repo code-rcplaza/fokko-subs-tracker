@@ -144,10 +144,35 @@ func TestSummaryResponse_MonthCountsRisesActionsAndUpcoming(t *testing.T) {
 	}
 }
 
+func TestSummaryResponse_Spend(t *testing.T) {
+	body, _ := encoded(t, sampleSummary())
+
+	// Gimnasio 25.000 and Netflix 19.000 in pesos: largest first, the manual named by its alias.
+	want := `"spend":[{"name":"Gimnasio","amount":2500000,"percent":57,"isOthers":false},{"name":"Netflix","amount":1900000,"percent":43,"isOthers":false}]`
+	if !strings.Contains(body, want) {
+		t.Errorf("summary JSON lacks %s:\n%s", want, body)
+	}
+}
+
+func TestSpendListOf_JoinsThePastTopInOthers(t *testing.T) {
+	lines := make([]domain.Subscription, 0, 7)
+	for i, name := range []string{"A", "B", "C", "D", "E", "F", "G"} {
+		amount := shared.Money(1000 * (7 - i))
+		lines = append(lines, domain.Subscription{Key: domain.GroupKey("service:" + name + "||d01"), Parent: domain.GroupKey("service:" + name),
+			Status: domain.StatusActive, Cadence: domain.CadenceMonthly, Amount: amount, Currency: shared.CurrencyCLP, InPesos: &domain.PesosAmount{Amount: amount}})
+	}
+
+	spend := spendListOf(lines)
+
+	if len(spend) != 6 || !spend[5].IsOthers || spend[5].Name != "" || spend[0].Name != "A" {
+		t.Errorf("spend = %+v, want the five largest by name and one Others without name", spend)
+	}
+}
+
 func TestSummaryResponse_EmptyListsAreNotNull(t *testing.T) {
 	body, _ := encoded(t, domain.Summary{AsOf: asOf})
 
-	for _, want := range []string{`"subscriptions":[]`, `"possible":[]`, `"rises":[]`, `"pendingActions":[]`, `"upcoming":[]`, `"charged":0`, `"remaining":0`, `"total":{"amount":0`} {
+	for _, want := range []string{`"subscriptions":[]`, `"possible":[]`, `"rises":[]`, `"pendingActions":[]`, `"upcoming":[]`, `"spend":[]`, `"charged":0`, `"remaining":0`, `"total":{"amount":0`} {
 		if !strings.Contains(body, want) {
 			t.Errorf("empty summary JSON lacks %s:\n%s", want, body)
 		}

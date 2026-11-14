@@ -16,6 +16,7 @@ import (
 // Handlers are the subscriptions routes; every one of them needs a session.
 type Handlers struct {
 	Summary             usecases.GetSummary
+	LineDetail          usecases.GetLineDetail
 	Decide              usecases.DecidePossibleSubscription
 	UndoDecision        usecases.UndoDecision
 	NameLine            usecases.NameLine
@@ -42,6 +43,7 @@ func (h Handlers) MountProtected(router chi.Router) {
 	router.Delete("/api/subscriptions/manual/{publicId}", h.serve(h.removeManual))
 	router.Post("/api/subscriptions/price-alerts/decision", h.serve(h.keepRise))
 	router.Get("/api/subscriptions/cancel-guide", h.serve(h.cancelGuide))
+	router.Get("/api/subscriptions/line", h.serve(h.lineDetail))
 	router.Post("/api/subscriptions/cancellations", h.serve(h.markForCancellation))
 	router.Delete("/api/subscriptions/line", h.serve(h.stopFollowing))
 }

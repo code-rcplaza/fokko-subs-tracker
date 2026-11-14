@@ -21,6 +21,16 @@ type summaryResponse struct {
 	Rises          []riseResponse          `json:"rises"`
 	PendingActions []pendingActionResponse `json:"pendingActions"`
 	Upcoming       []upcomingResponse      `json:"upcoming"`
+	Spend          []spendResponse         `json:"spend"`
+}
+
+// spendResponse is one segment of the ring: monthly in pesos (hundredths).
+// "Others" has no name; the front writes it with i18n.
+type spendResponse struct {
+	Name     string       `json:"name"`
+	Amount   shared.Money `json:"amount"`
+	Percent  int          `json:"percent"`
+	IsOthers bool         `json:"isOthers"`
 }
 
 type moneyResponse struct {
@@ -102,6 +112,7 @@ func summaryResponseOf(summary domain.Summary) summaryResponse {
 		Rises:          risesOf(domain.RisesWithImpact(summary)),
 		PendingActions: pendingActionsOf(domain.PendingActions(summary)),
 		Upcoming:       upcomingListOf(domain.UpcomingCharges(summary.Subscriptions, summary.AsOf)),
+		Spend:          spendListOf(summary.Subscriptions),
 	}
 }
 
@@ -196,6 +207,31 @@ func upcomingListOf(lines []domain.Subscription) []upcomingResponse {
 		upcoming = append(upcoming, upcomingResponse{LineKey: line.Key, Name: domain.ParentName(line.Parent), Alias: line.Alias, Amount: moneyOf(line.Amount, line.Currency), Date: line.NextCharge.Unix()})
 	}
 	return upcoming
+}
+
+// spendListOf gives the largest services and "Others", as the ring draws them.
+func spendListOf(subscriptions []domain.Subscription) []spendResponse {
+	shares := domain.TopSpendShares(domain.SpendByService(subscriptions))
+	spend := make([]spendResponse, 0, len(shares))
+	for _, share := range shares {
+		spend = append(spend, spendResponse{Name: shareName(share, subscriptions), Amount: share.Amount, Percent: share.Percent, IsOthers: share.IsOthers})
+	}
+	return spend
+}
+
+// shareName is the service's name; a manual line has none, so it is the alias the user gave.
+func shareName(share domain.SpendShare, subscriptions []domain.Subscription) string {
+	if share.IsOthers {
+		return ""
+	}
+	if name := domain.ParentName(share.Parent); name != "" {
+		return name
+	}
+	at := slices.IndexFunc(subscriptions, func(line domain.Subscription) bool { return line.Parent == share.Parent })
+	if at < 0 {
+		return ""
+	}
+	return subscriptions[at].Alias
 }
 
 func moneyOf(amount shared.Money, currency shared.Currency) moneyResponse {

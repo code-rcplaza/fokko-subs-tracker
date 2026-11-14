@@ -42,3 +42,15 @@ func pesosAmountOf(line Subscription, rate *shared.ExchangeRate) *PesosAmount {
 	}
 	return nil
 }
+
+// ChargeInPesos is one charge in pesos: as it is when in pesos, converted
+// (approximate) when in dollars with a rate, nil without one.
+func ChargeInPesos(charge shared.Charge, rate *shared.ExchangeRate) *PesosAmount {
+	switch {
+	case charge.Currency == shared.CurrencyCLP:
+		return &PesosAmount{Amount: charge.Amount}
+	case charge.Currency == shared.CurrencyUSD && rate != nil:
+		return &PesosAmount{Amount: dollarsToPesos(charge.Amount, *rate), IsApproximate: true}
+	}
+	return nil
+}

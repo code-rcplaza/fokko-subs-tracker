@@ -57,3 +57,26 @@ func TestApplyExchangeRates_LeavesTheGivenSummaryUntouched(t *testing.T) {
 		t.Errorf("the caller's line changed to %+v", lines[0].InPesos)
 	}
 }
+
+func TestChargeInPesos(t *testing.T) {
+	rate := &shared.ExchangeRate{PesosPerDollar: 95000}
+	cases := []struct {
+		name   string
+		charge shared.Charge
+		rate   *shared.ExchangeRate
+		want   *PesosAmount
+	}{
+		{"pesos stay as they are", shared.Charge{Amount: 999000, Currency: shared.CurrencyCLP}, nil, &PesosAmount{Amount: 999000}},
+		{"dollars with a rate are approximate", shared.Charge{Amount: 2000, Currency: shared.CurrencyUSD}, rate, &PesosAmount{Amount: 1900000, IsApproximate: true}},
+		{"dollars without a rate have none", shared.Charge{Amount: 2000, Currency: shared.CurrencyUSD}, nil, nil},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			got := ChargeInPesos(tc.charge, tc.rate)
+
+			if (got == nil) != (tc.want == nil) || (got != nil && *got != *tc.want) {
+				t.Errorf("ChargeInPesos = %+v, want %+v", got, tc.want)
+			}
+		})
+	}
+}

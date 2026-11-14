@@ -171,8 +171,10 @@ func summaryOver(db *sql.DB, repos subscriptionRepos) subscriptionsusecases.GetS
 
 func subscriptionsHandlers(db *sql.DB, responder httpserver.Responder) subscriptionshttp.Handlers {
 	repos := subscriptionReposOver(db)
+	summary := summaryOver(db, repos)
 	return subscriptionshttp.Handlers{
-		Summary:             summaryOver(db, repos),
+		Summary:             summary,
+		LineDetail:          subscriptionsusecases.NewGetLineDetail(summary),
 		Decide:              subscriptionsusecases.NewDecidePossibleSubscription(repos.lines, repos.decisions),
 		UndoDecision:        subscriptionsusecases.NewUndoDecision(repos.decisions),
 		NameLine:            subscriptionsusecases.NewNameLine(repos.lines, repos.aliases),
