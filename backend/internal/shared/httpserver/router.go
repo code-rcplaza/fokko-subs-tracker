@@ -17,7 +17,7 @@ import (
 func NewRouter(logger *slog.Logger, check HealthCheck) *chi.Mux {
 	responder := Responder{Logger: logger}
 	router := chi.NewRouter()
-	router.Use(responder.LogRequests, responder.RecoverPanics, responder.CheckOrigin)
+	router.Use(responder.LogRequests, responder.RecoverPanics, responder.CheckOrigin, noStoreForAPI)
 	router.Get("/api/health", responder.healthHandler(check))
 	router.NotFound(responder.routeNotFoundHandler())
 	return router

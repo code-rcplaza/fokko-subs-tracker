@@ -16,13 +16,22 @@ El despliegue queda independiente de la plataforma si todo vive en una imagen de
 - `.` (raíz del repo)
 
 ## Dudas abiertas
-- Imagen final: se propone una base mínima (distroless o alpine). Como no trae `curl`, el chequeo de salud necesita un subcomando del binario. ¿Se acepta?
 - SQLite exige una sola réplica y un volumen persistente: es el único requisito sobre la plataforma.
 
+## Dudas resueltas
+- Base `gcr.io/distroless/static-debian12:nonroot` y subcomando `mail-checker health` (opción
+  propuesta): `HEALTHCHECK` lo usa porque la imagen no trae shell ni `curl`.
+- La app escuchaba fijo en `127.0.0.1` (pensada local): dentro de un contenedor no se alcanza. Nueva
+  variable `MAILCHECKER_HOST` (IP; por defecto `127.0.0.1`, la imagen pone `0.0.0.0`). Los dos tests de
+  `LoadConfig` que comparan el `Config` entero ganaron el campo `Host` (cambió el requisito).
+- Verificado con Docker 29: health 200 desde el host, `docker inspect` healthy, usuario `nonroot`, front y
+  caché de `assets/`, la cuenta sigue al recrear el contenedor con el volumen `/data`, y la imagen
+  (27 MB) solo tiene `app/mail-checker` y `data/`. `.dockerignore` deja fuera `.git`, `.env*`, datos y builds.
+
 ## Tareas
-- [ ] [TASK-001 Dockerfile multi-stage](TASK-001-DOCKERFILE-BUILD.md)
-- [ ] [TASK-002A Proceso sin privilegios](TASK-002A-RUNTIME-NONROOT.md)
-- [ ] [TASK-002B Datos en volumen](TASK-002B-RUNTIME-VOLUME.md)
-- [ ] [TASK-002C Configuración por entorno](TASK-002C-RUNTIME-ENV.md)
-- [ ] [TASK-003 Chequeo de salud](TASK-003-CONTAINER-HEALTHCHECK.md)
-- [ ] [TASK-004 `.dockerignore`](TASK-004-DOCKERIGNORE.md)
+- [x] [TASK-001 Dockerfile multi-stage](TASK-001-DOCKERFILE-BUILD.md)
+- [x] [TASK-002A Proceso sin privilegios](TASK-002A-RUNTIME-NONROOT.md)
+- [x] [TASK-002B Datos en volumen](TASK-002B-RUNTIME-VOLUME.md)
+- [x] [TASK-002C Configuración por entorno](TASK-002C-RUNTIME-ENV.md)
+- [x] [TASK-003 Chequeo de salud](TASK-003-CONTAINER-HEALTHCHECK.md)
+- [x] [TASK-004 `.dockerignore`](TASK-004-DOCKERIGNORE.md)

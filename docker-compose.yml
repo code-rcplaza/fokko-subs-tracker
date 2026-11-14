@@ -1,0 +1,25 @@
+# Local: la misma imagen que producción, con la base en un volumen con nombre.
+# docker compose up --build  →  http://localhost:8080
+services:
+  app:
+    build: .
+    image: fokko-subs:local
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      MAILCHECKER_ENV: ${MAILCHECKER_ENV:-development}
+    ports:
+      - "${FOKKO_HOST_PORT:-8080}:8080"
+    volumes:
+      - fokko-data:/data
+    healthcheck:
+      test: ["CMD", "/app/mail-checker", "health"]
+      interval: 30s
+      timeout: 5s
+      start_period: 10s
+      retries: 3
+    restart: unless-stopped
+
+volumes:
+  fokko-data:

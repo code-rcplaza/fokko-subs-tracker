@@ -1,0 +1,15 @@
+# Only what the build needs: never secrets, local data nor build output.
+.git
+.env
+.env.*
+**/node_modules
+backend/data
+backend/bin
+**/*.db
+**/*.db-*
+frontend/dist
+backend/internal/shared/httpserver/web/dist
+.DS_Store
+.idea
+.vscode
+docs

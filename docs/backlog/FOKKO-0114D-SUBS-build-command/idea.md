@@ -19,7 +19,12 @@ Esta idea cubre solo: Comando de build único. El resto del trabajo original est
 - `frontend` (build)
 
 ## Dudas abiertas
-- Para que `go build` compile sin haber construido el front, se propone un archivo de reemplazo versionado dentro de `web/dist`. ¿Se acepta?
+- Falta agregar `make build` a "Comandos" de `CLAUDE.md` (criterio 3): editar `CLAUDE.md` se pregunta antes.
+
+## Dudas resueltas
+- `Makefile` en la raíz: `make build` corre `pnpm install --frozen-lockfile && pnpm build` (al embed)
+  y después `go build -o backend/bin/mail-checker ./cmd/api`; `make` se detiene en la primera falla.
+- El reemplazo versionado del embed: ver FOKKO-0114A-SUBS.
 
 ## Tareas
-- [ ] [TASK-001 Un solo comando de build](TASK-001-BUILD-COMMAND.md)
+- [x] [TASK-001 Un solo comando de build](TASK-001-BUILD-COMMAND.md)

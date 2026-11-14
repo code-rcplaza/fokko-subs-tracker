@@ -15,14 +15,20 @@ El repositorio es público y no tiene un README que explique qué es la app, có
 ## Features afectadas
 - `.` (raíz del repo)
 
-## Dudas abiertas
-- Ninguna.
+## Dudas resueltas
+- El README ya existía; se actualizó: estado MVP, `docker compose up --build` como camino corto y
+  `make build` sin Docker, tabla de variables con columna "Obligatoria" (suma `MAILCHECKER_HOST` y
+  `FOKKO_HOST_PORT`), sección de despliegue (una réplica y volumen, `mail-checker health`, respaldo
+  del volumen), datos guardados y descartados según la base y las pruebas de privacidad, y enlace a
+  "Agregar un banco".
+- Comprobado en una copia limpia (solo archivos que versiona git): `docker compose up --build` queda
+  healthy, sirve el front y el respaldo con `tar` funciona; `go build` compila sin el front construido.
 
 ## Tareas
-- [ ] [TASK-001A Qué detecta la app](TASK-001A-README-WHAT.md)
-- [ ] [TASK-001B Enlaces a la documentación](TASK-001B-README-LINKS.md)
-- [ ] [TASK-001C Qué datos se guardan](TASK-001C-README-DATA.md)
-- [ ] [TASK-002 Correr en desarrollo](TASK-002-README-RUN-DEV.md)
-- [ ] [TASK-003A Tabla de variables](TASK-003A-README-ENV.md)
-- [ ] [TASK-003B Requisito de SQLite](TASK-003B-README-SQLITE.md)
-- [ ] [TASK-003C Chequeo de salud](TASK-003C-README-HEALTH.md)
+- [x] [TASK-001A Qué detecta la app](TASK-001A-README-WHAT.md)
+- [x] [TASK-001B Enlaces a la documentación](TASK-001B-README-LINKS.md)
+- [x] [TASK-001C Qué datos se guardan](TASK-001C-README-DATA.md)
+- [x] [TASK-002 Correr en desarrollo](TASK-002-README-RUN-DEV.md)
+- [x] [TASK-003A Tabla de variables](TASK-003A-README-ENV.md)
+- [x] [TASK-003B Requisito de SQLite](TASK-003B-README-SQLITE.md)
+- [x] [TASK-003C Chequeo de salud](TASK-003C-README-HEALTH.md)

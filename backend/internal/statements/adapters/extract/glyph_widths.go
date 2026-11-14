@@ -33,8 +33,9 @@ const (
 	thousandths       = 1000.0
 )
 
-// glyphAdvance is how far a glyph should move the pen at its font and size.
-func glyphAdvance(glyph pdf.Text) float64 {
+// GlyphAdvance is how far a glyph should move the pen at its font and size;
+// pdftest builds test PDFs with it, so they read back exactly.
+func GlyphAdvance(glyph pdf.Text) float64 {
 	return float64(widthOf(glyph.S)) / thousandths * glyph.FontSize * fontScale(glyph.Font)
 }
 

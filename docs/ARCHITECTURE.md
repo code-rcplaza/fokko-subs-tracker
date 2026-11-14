@@ -66,7 +66,8 @@ backend/
 │   ├── run.go                       config → base → migraciones → rutas → limpieza → servidor
 │   ├── wiring.go                    composition root: crea adaptadores y casos de uso, registra bancos, arma rutas
 │   ├── cleanup.go                   limpieza periódica de accesos vencidos (cada hora)
-│   └── config.go                    variables de entorno, fail fast
+│   ├── health_check.go              `mail-checker health`: el chequeo de salud del contenedor
+│   └── config.go                    variables de entorno, fail fast (`MAILCHECKER_HOST` IP, por defecto 127.0.0.1)
 └── internal/
     ├── auth/                            registro, código por correo, sesión
     │   ├── adapters/                    http/, sqlite/, mailer/ (envío del código), export/ (puente: copia de los datos)
@@ -907,6 +908,13 @@ frontend/src/
   `/registro`.
 - **Pruebas lentas:** las pantallas montan la app entera; con la máquina cargada, `asyncUtilTimeout`
   es 5 s (`src/test/setup.ts`) y `testTimeout` 15 s (`vite.config.ts`).
+- **Un solo binario:** `make build` construye el front en `httpserver/web/dist` y compila Go con él
+  embebido (`web.Site()`; sin build, la página de `web/fallback`). `Responder.MountFront` lo sirve para
+  todo lo que no es `/api`: archivo si existe, `index.html` para rutas del front, JSON 404 para la API y
+  para archivos que faltan. Caché: `assets/` inmutable un año, `index.html` y raíz `no-cache`, API `no-store`.
+- **Imagen:** `Dockerfile` multi-stage (Node para el front, Go sin cgo, final distroless `nonroot`):
+  solo el binario; datos en el volumen `/data` (`MAILCHECKER_DB_PATH=/data/mail-checker.db`), escucha en
+  `MAILCHECKER_HOST=0.0.0.0` y el puerto 8080 y `HEALTHCHECK` con `mail-checker health`. Una sola réplica (SQLite).
 - **Formularios:** react-hook-form con `zodResolver` (`@hookform/resolvers`) en el hook de
   `application`; los mensajes del esquema son llaves i18n, igual que las del back. Un 400 con
   `fields` pone cada llave en su campo (`serverFieldErrors`); cualquier otro error va arriba del
@@ -1011,7 +1019,7 @@ Otros:
 - **Apagado con conexiones sin usar**: un cliente (p. ej. un navegador que preconecta) puede dejar
   una conexión abierta que nunca manda petición; `Shutdown` la espera y a los 5 s `run` termina con
   `shutdown: context deadline exceeded` (código 1). Lo común es forzar `server.Close()` al vencer el
-  plazo y no tratarlo como falla. Lo detectaron las pruebas de humo (`cmd/api/smoke_test.go`).
+  plazo y no tratarlo como falla. Lo detectaron las pruebas de humo (`cmd/api/smoke_test.go`). `cmd/api/smoke_statement_test.go` sube como PDF las cartolas anonimizadas del parser (generadas con `extract/pdftest`, nunca un PDF real en el repo) y revisa el resumen.
 - **Sin diseño en el handoff:** tablet (768–1023 px) y las versiones de escritorio de Revisión vacía y Resumen vacío.
 - **Revisión visual del front:** Registro, Login y Bienvenida no se han revisado a 390, 768 y 1280 px
   (no había navegador en la máquina de desarrollo); sus ideas quedan en `doing` hasta hacerlo.

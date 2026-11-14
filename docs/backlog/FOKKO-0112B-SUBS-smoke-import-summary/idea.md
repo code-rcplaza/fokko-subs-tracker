@@ -18,9 +18,16 @@ Esta idea cubre solo: Smoke test: de la cartola al resumen. El resto del trabajo
 - `cmd/api` (pruebas de integración)
 
 ## Dudas abiertas
-- Hace falta una cartola real en PDF anonimizada para el fixture; no se inventa. Se anonimiza antes de crearla.
 - Las pruebas del front quedan con una revisión manual a 390, 768 y 1280 px por pantalla.
 
+## Dudas resueltas
+- Fixture: no se commitea ningún PDF. `extract/pdftest.FromText` arma el PDF desde los textos ya
+  anonimizados del parser BCI (`bci/testdata/statement_*.txt`), glifo por glifo con los anchos del
+  extractor (`extract.GlyphAdvance`) y WinAnsi para las tildes; un test comprueba que el texto vuelve
+  igual. Sin dependencias nuevas.
+- Con las dos cartolas: Microsoft queda como suscripción mensual ($5.399), Spotify y HostGator como
+  posibles; confirmar Spotify como anual la pasa a suscripciones.
+
 ## Tareas
-- [ ] [TASK-001A Subir la cartola](TASK-001A-SMOKE-UPLOAD.md)
-- [ ] [TASK-001B Resumen de la cartola](TASK-001B-SMOKE-SUMMARY.md)
+- [x] [TASK-001A Subir la cartola](TASK-001A-SMOKE-UPLOAD.md)
+- [x] [TASK-001B Resumen de la cartola](TASK-001B-SMOKE-SUMMARY.md)

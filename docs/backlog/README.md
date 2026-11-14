@@ -203,18 +203,18 @@ respeta las dependencias. ⛔ marca una decisión abierta que la bloquea.
 | # | Idea | Estado |
 |---|---|---|
 | FOKKO-0112A-SUBS | [Smoke test: acceso](FOKKO-0112A-SUBS-smoke-auth/idea.md) | done |
-| FOKKO-0112B-SUBS | [Smoke test: de la cartola al resumen](FOKKO-0112B-SUBS-smoke-import-summary/idea.md) | todo |
+| FOKKO-0112B-SUBS | [Smoke test: de la cartola al resumen](FOKKO-0112B-SUBS-smoke-import-summary/idea.md) | done |
 | FOKKO-0112C-SUBS | [Smoke test: aislamiento entre usuarios](FOKKO-0112C-SUBS-smoke-isolation/idea.md) | done |
 | FOKKO-0112D-SUBS | [Smoke test: eliminar todo](FOKKO-0112D-SUBS-smoke-delete-all/idea.md) | done |
 | FOKKO-0113A-SUBS | [Textos legales ⛔ decisión 12](FOKKO-0113A-SUBS-legal-pages/idea.md) | todo |
-| FOKKO-0113B-SUBS | [Pruebas de privacidad](FOKKO-0113B-SUBS-privacy-tests/idea.md) | todo |
-| FOKKO-0114A-SUBS | [Embeber el front en el binario](FOKKO-0114A-SUBS-embed-front/idea.md) | todo |
-| FOKKO-0114B-SUBS | [Respaldo de rutas del front](FOKKO-0114B-SUBS-spa-fallback/idea.md) | todo |
-| FOKKO-0114C-SUBS | [Cabeceras de caché](FOKKO-0114C-SUBS-static-cache/idea.md) | todo |
-| FOKKO-0114D-SUBS | [Comando de build único](FOKKO-0114D-SUBS-build-command/idea.md) | todo |
-| FOKKO-0115-SUBS | [Dockerfile multi-stage](FOKKO-0115-SUBS-dockerfile/idea.md) | todo |
-| FOKKO-0116-SUBS | [`docker-compose` local](FOKKO-0116-SUBS-docker-compose-local/idea.md) | todo |
-| FOKKO-0117-SUBS | [README](FOKKO-0117-SUBS-readme/idea.md) | todo |
+| FOKKO-0113B-SUBS | [Pruebas de privacidad](FOKKO-0113B-SUBS-privacy-tests/idea.md) | done |
+| FOKKO-0114A-SUBS | [Embeber el front en el binario](FOKKO-0114A-SUBS-embed-front/idea.md) | done |
+| FOKKO-0114B-SUBS | [Respaldo de rutas del front](FOKKO-0114B-SUBS-spa-fallback/idea.md) | done |
+| FOKKO-0114C-SUBS | [Cabeceras de caché](FOKKO-0114C-SUBS-static-cache/idea.md) | done |
+| FOKKO-0114D-SUBS | [Comando de build único](FOKKO-0114D-SUBS-build-command/idea.md) | done |
+| FOKKO-0115-SUBS | [Dockerfile multi-stage](FOKKO-0115-SUBS-dockerfile/idea.md) | done |
+| FOKKO-0116-SUBS | [`docker-compose` local](FOKKO-0116-SUBS-docker-compose-local/idea.md) | done |
+| FOKKO-0117-SUBS | [README](FOKKO-0117-SUBS-readme/idea.md) | done |
 
 ### H. Agregadas por la auditoría del código
 

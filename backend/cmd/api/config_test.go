@@ -14,7 +14,7 @@ func TestLoadConfig_UsesDefaultsWhenUnset(t *testing.T) {
 	if err != nil {
 		t.Fatalf("LoadConfig() error = %v, want nil", err)
 	}
-	want := Config{Port: 8080, DBPath: "data/mail-checker.db"}
+	want := Config{Host: "127.0.0.1", Port: 8080, DBPath: "data/mail-checker.db"}
 	if got != want {
 		t.Errorf("LoadConfig() = %+v, want %+v", got, want)
 	}
@@ -22,13 +22,14 @@ func TestLoadConfig_UsesDefaultsWhenUnset(t *testing.T) {
 
 func TestLoadConfig_ReadsValuesFromEnv(t *testing.T) {
 	got, err := LoadConfig(fakeEnv(map[string]string{
+		"MAILCHECKER_HOST":    "0.0.0.0",
 		"MAILCHECKER_PORT":    "9090",
 		"MAILCHECKER_DB_PATH": "/tmp/x.db",
 	}))
 	if err != nil {
 		t.Fatalf("LoadConfig() error = %v, want nil", err)
 	}
-	want := Config{Port: 9090, DBPath: "/tmp/x.db"}
+	want := Config{Host: "0.0.0.0", Port: 9090, DBPath: "/tmp/x.db"}
 	if got != want {
 		t.Errorf("LoadConfig() = %+v, want %+v", got, want)
 	}
@@ -55,5 +56,17 @@ func TestLoadConfig_RejectsBlankDBPath(t *testing.T) {
 	}
 	if !strings.Contains(err.Error(), "MAILCHECKER_DB_PATH") {
 		t.Errorf("error %q does not name MAILCHECKER_DB_PATH", err)
+	}
+}
+
+func TestLoadConfig_RejectsAHostThatIsNotAnIP(t *testing.T) {
+	for _, host := range []string{"localhost", "0.0.0.0:80", "nope"} {
+		t.Run(host, func(t *testing.T) {
+			_, err := LoadConfig(fakeEnv(map[string]string{"MAILCHECKER_HOST": host}))
+
+			if err == nil || !strings.Contains(err.Error(), "MAILCHECKER_HOST") {
+				t.Errorf("LoadConfig() error = %v, want one naming MAILCHECKER_HOST", err)
+			}
+		})
 	}
 }

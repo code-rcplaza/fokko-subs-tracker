@@ -3,9 +3,10 @@
 **Descubre en qué te están cobrando cada mes.**
 
 Las suscripciones se cobran en silencio, de a poco, y un día sumas cuatro o cinco que ya ni usas.
-Fokko Subs lee tu cartola, encuentra esos cobros que se repiten y te muestra cuánto suman.
+Fokko Subs lee la cartola de tu tarjeta en PDF, encuentra esos cobros que se repiten y te muestra
+cuánto suman. Cada persona tiene su cuenta y solo ve sus datos.
 
-> Estado: **en construcción** (MVP). Hoy funciona el motor de detección; la app completa llega pronto.
+> Estado: **MVP**. La app completa funciona en tu computadora; todavía no está publicada.
 
 [Qué hace](#qué-hace) · [Cómo funciona](#cómo-funciona) · [Tus datos](#tus-datos) · [Pruébalo](#pruébalo-en-tu-computadora) · [Para desarrolladores](#para-desarrolladores)
 
@@ -66,9 +67,11 @@ flowchart LR
 
 Tus datos son tuyos y solo los ves tú.
 
-- **Guardamos lo mínimo**: de cada cobro, el comercio, el monto, la fecha y los últimos 4 dígitos de
-  la tarjeta; del archivo, solo su nombre.
-- **El PDF y su texto no se guardan.** Se descartan al terminar de leerlo.
+- **Guardamos lo mínimo**: tu nombre y tu correo; de cada cobro, el comercio, el monto, la fecha, la
+  tarjeta y sus últimos 4 dígitos; de cada archivo, su nombre y el número de las líneas que no se
+  pudieron leer.
+- **El PDF y su texto no se guardan.** Se descartan al terminar de leerlo: ni el titular, ni el lugar
+  de compra, ni las líneas que no son cobros. Hay pruebas que lo revisan en la base y en los logs.
 - **Te los llevas cuando quieras**: descarga una copia (CSV o JSON) o elimina todo.
 
 ## Lo que todavía no hace
@@ -83,14 +86,20 @@ Tus datos son tuyos y solo los ves tú.
 
 ## Pruébalo en tu computadora
 
-Necesitas Go 1.27 o superior y Git. Nada más: la base de datos (SQLite) viene incluida.
+Lo más simple es Docker: no necesitas instalar nada más.
 
 ```sh
 git clone https://github.com/code-rcplaza/fokko-subs-tracker.git
-cd fokko-subs-tracker/backend
-go build -o mail-checker ./cmd/api
-./mail-checker
+cd fokko-subs-tracker
+docker compose up --build
 ```
+
+Abre `http://localhost:8080` y crea tu cuenta. En este modo el código de 6 dígitos no se envía por
+correo: aparece en la consola (`docker compose logs app`). Los datos quedan en el volumen
+`fokko-data` y siguen ahí después de `docker compose down`.
+
+Sin Docker necesitas Go 1.27, Node.js y pnpm: `make build` construye el front y un solo binario con el
+front adentro, y `./backend/bin/mail-checker` lo arranca en `http://localhost:8080`.
 
 Comprueba que responde:
 
@@ -98,8 +107,6 @@ Comprueba que responde:
 curl http://localhost:8080/api/health
 # {"status":"ok"}
 ```
-
-Para detenerlo, `Ctrl+C`.
 
 <details>
 <summary><strong>Requisitos y variables de entorno</strong></summary>
@@ -113,17 +120,41 @@ Para detenerlo, `Ctrl+C`.
 | Node.js | 24 o superior | Herramientas del front |
 | pnpm | 10 o superior | Instalar y correr el front (`pnpm install` dentro de `frontend/`) |
 
-Docker todavía no está listo.
+| Docker | 24 o superior | Opcional: `docker compose up --build` corre todo sin instalar lo demás |
 
-| Variable | Por defecto | Qué hace |
-|---|---|---|
-| `MAILCHECKER_PORT` | `8080` | Puerto del servidor, entre 1 y 65535 |
-| `MAILCHECKER_DB_PATH` | `data/mail-checker.db` | Archivo de la base de datos; la carpeta se crea sola |
-| `MAILCHECKER_ENV` | `development` | `development` o `production` |
-| `MAILCHECKER_RESEND_API_KEY` | — | Llave de Resend para enviar los códigos; obligatoria en `production`. En `development`, sin llave, el código se escribe en la consola |
-| `MAILCHECKER_MAIL_FROM` | — | Remitente de los códigos (dominio verificado en Resend); obligatorio en `production` |
+Copia `.env.example` a `.env` para cambiar algo; los valores del ejemplo son falsos.
+
+| Variable | Por defecto | Obligatoria | Qué hace |
+|---|---|---|---|
+| `MAILCHECKER_HOST` | `127.0.0.1` (`0.0.0.0` en la imagen) | no | IP donde escucha el servidor |
+| `MAILCHECKER_PORT` | `8080` | no | Puerto del servidor, entre 1 y 65535 |
+| `MAILCHECKER_DB_PATH` | `data/mail-checker.db` (`/data/mail-checker.db` en la imagen) | no | Archivo de la base de datos; la carpeta se crea sola |
+| `MAILCHECKER_ENV` | `development` | no | `development` o `production` |
+| `MAILCHECKER_RESEND_API_KEY` | — | en `production` | Llave de Resend para enviar los códigos. En `development`, sin llave, el código se escribe en la consola |
+| `MAILCHECKER_MAIL_FROM` | — | en `production` | Remitente de los códigos (dominio verificado en Resend) |
+| `FOKKO_HOST_PORT` | `8080` | no | Solo `docker compose`: puerto del host donde se publica la app |
 
 Un valor inválido hace que el programa se detenga con un mensaje claro en lugar de arrancar a medias.
+
+</details>
+
+<details>
+<summary><strong>Desplegar: SQLite, salud y respaldos</strong></summary>
+
+- **Una sola réplica y un volumen persistente.** La base es SQLite, un archivo en `/data`: corre una
+  sola instancia y monta un volumen ahí. Es lo único que la app le pide a la plataforma.
+- **Chequeo de salud.** `GET /api/health` responde `{"status":"ok"}` si la base contesta en 1 s. La
+  imagen no trae shell ni `curl`, así que su `HEALTHCHECK` usa el propio binario: `mail-checker health`.
+- **Respaldo.** Detén la app (o espera a que no escriba) y copia el volumen:
+
+  ```sh
+  docker compose stop app
+  docker run --rm -v fokko-subs-tracker_fokko-data:/data -v "$PWD":/backup alpine \
+    tar czf /backup/fokko-data.tgz -C /data .
+  docker compose start app
+  ```
+
+  El nombre del volumen lleva el de la carpeta del proyecto delante (`docker volume ls` lo muestra).
 
 </details>
 
@@ -165,14 +196,10 @@ pnpm dev
 Abre `http://localhost:5173`. Sin sesión, la raíz te lleva a Login; desde ahí puedes crear tu cuenta.
 En desarrollo el código de 6 dígitos no se envía por correo: aparece en la terminal del servidor de Go.
 
-Hoy funcionan Registro, Login, Código, Bienvenida y Subir cartola. El resto (Análisis, Revisión,
-Resumen, Subs, Perfil) está en construcción; la API de todas ya responde.
+Funcionan todas las pantallas del MVP: Registro, Login, Código, Bienvenida, Subir cartola, Análisis,
+Revisión, Resumen, Subs, Detalle, Agregar, Editar, Alerta, Cómo cancelar, Perfil y Eliminar todo.
 
 </details>
-
-> **Todavía no puedes usar el producto completo.** La API ya responde (registro con código, subir
-> cartola, resumen, acciones sobre suscripciones, copia de tus datos y eliminar la cuenta); en el
-> front faltan las pantallas que siguen a la subida.
 
 ---
 
@@ -192,7 +219,7 @@ primera versión está en [`docs/mvp.md`](docs/mvp.md).
 | Base de datos | SQLite (`modernc.org/sqlite`, sin cgo), migraciones con `github.com/pressly/goose/v3` |
 | Lectura de PDF | `github.com/ledongthuc/pdf` |
 | Frontend | React 19 + TypeScript (estricto) con Vite, Tailwind v4, Biome, Vitest + Testing Library; TanStack Router y Query, react-hook-form + zod (`@hookform/resolvers`) |
-| Despliegue | Docker (pendiente) |
+| Despliegue | Un solo binario con el front embebido; imagen Docker multi-stage (distroless, sin root) |
 
 Las dependencias listadas están aprobadas. Agregar una nueva requiere preguntar antes.
 
@@ -229,7 +256,7 @@ El detalle completo (puertos por feature, flujos numerados y modelo de datos) es
 </details>
 
 <details>
-<summary><strong>Frontend: capas y componentes (en construcción)</strong></summary>
+<summary><strong>Frontend: capas y componentes</strong></summary>
 
 El front sigue la misma idea que el back: cada feature se parte en capas, y las dependencias apuntan
 hacia adentro (`presentation → application → domain`; `infrastructure → application`).
@@ -325,7 +352,8 @@ Reglas de dependencia:
 - **Mensajes al usuario:** el backend devuelve llaves i18n (`feature.motivo`), no texto. Las
   llaves son constantes en `domain`. Los logs sí van en texto, con `slog`.
 - **Sin datos personales en logs, fixtures ni commits.** Los PDFs reales no entran al repositorio;
-  los fixtures son texto anonimizado escrito a mano.
+  los fixtures son texto anonimizado escrito a mano, y las pruebas que necesitan un PDF lo arman desde
+  ese texto (`extract/pdftest`).
 - **Inmutabilidad:** las funciones no modifican slices ni mapas recibidos; devuelven copias.
 - **Validación en el borde:** los constructores de `domain` (`NewCharge`, `NewService`,
   `NewManualSubscription`, `NewLineOverride`) validan y devuelven error. No existen valores de
@@ -364,6 +392,9 @@ Reglas de dependencia:
 
 La cartola de BCI tiene dos estados: el nacional (compras en pesos) y el internacional (origen y
 US$). Un cobro en pesos dentro del internacional se reconoce por la razón entre ambos montos.
+
+Para agregar otro banco: un parser nuevo que cumpla el puerto, registrado en `cmd/api`. Los pasos
+están en [Agregar un banco](docs/ARCHITECTURE.md#agregar-un-banco-ej-falabella).
 
 </details>
 
@@ -408,15 +439,15 @@ Los commits van en inglés e identifican la tarea (`FOKKO-XXXX-SUBS/TASK-XXX`) e
 
 **Hecho:** dominio y casos de uso del MVP (catálogo de servicios, detección, cartolas de BCI, tipo
 de cambio, resumen, manuales, alzas, ajustes por línea y decisiones del usuario), acceso con código
-por correo, persistencia en SQLite, la API REST completa con pruebas de humo, y la base del front
-(proyecto, tokens, tema, cliente de la API, i18n y los primeros componentes).
+por correo, persistencia en SQLite, la API REST completa con pruebas de humo y de privacidad, todas las
+pantallas del front, el front embebido en el binario y la imagen Docker.
 
-**Pendiente:** el resto de los componentes y las pantallas del front, servir el front desde Go y el
-empaquetado en Docker. El avance exacto está en
+**Pendiente:** los textos legales (términos y privacidad), la revisión visual de las pantallas en
+dispositivos y elegir dónde publicarla. El avance exacto está en
 [`docs/backlog/README.md`](docs/backlog/README.md).
 
 </details>
 
 ---
 
-<sub>En construcción. El MVP todavía no tiene fecha pública de lanzamiento.</sub>
+<sub>MVP sin publicar: todavía no tiene fecha pública de lanzamiento.</sub>

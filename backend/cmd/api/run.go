@@ -19,10 +19,7 @@ import (
 	"github.com/code-rcplaza/mail-checker/backend/internal/shared/sqlite/migrations"
 )
 
-const (
-	listenHost      = "127.0.0.1" // personal, local app: never exposed to the network
-	shutdownTimeout = 5 * time.Second
-)
+const shutdownTimeout = 5 * time.Second
 
 // run wires config → logger → database → migrations → router → cleanup → server and
 // blocks until ctx is canceled, then shuts down in order.
@@ -44,12 +41,12 @@ func run(ctx context.Context, getenv func(string) string, stdout io.Writer) erro
 	if err != nil {
 		return err
 	}
-	listener, err := listen(config.Port)
+	listener, err := listen(config)
 	if err != nil {
 		return err
 	}
 	go cleanupEveryHour(ctx, appDependencies{db: db, logger: logger})
-	logger.Info("server started", "port", config.Port, "db_path", config.DBPath, "production", config.IsProduction, "mailer", mailerName(config.Mailer))
+	logger.Info("server started", "host", config.Host, "port", config.Port, "db_path", config.DBPath, "production", config.IsProduction, "mailer", mailerName(config.Mailer))
 	return runningServer{server: newServer(router, defaultTimeouts), listener: listener, logger: logger}.serveUntilCanceled(ctx)
 }
 
@@ -77,10 +74,10 @@ func closeDB(db *sql.DB, logger *slog.Logger) {
 }
 
 // listen binds before logging "started", so a busy port fails fast.
-func listen(port int) (net.Listener, error) {
-	listener, err := net.Listen("tcp", net.JoinHostPort(listenHost, strconv.Itoa(port)))
+func listen(config Config) (net.Listener, error) {
+	listener, err := net.Listen("tcp", net.JoinHostPort(config.Host, strconv.Itoa(config.Port)))
 	if err != nil {
-		return nil, fmt.Errorf("listen on port %d: %w", port, err)
+		return nil, fmt.Errorf("listen on %s:%d: %w", config.Host, config.Port, err)
 	}
 	return listener, nil
 }

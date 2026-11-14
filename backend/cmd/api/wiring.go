@@ -19,6 +19,7 @@ import (
 	authusecases "github.com/code-rcplaza/mail-checker/backend/internal/auth/usecases"
 	"github.com/code-rcplaza/mail-checker/backend/internal/shared/clock"
 	"github.com/code-rcplaza/mail-checker/backend/internal/shared/httpserver"
+	"github.com/code-rcplaza/mail-checker/backend/internal/shared/httpserver/web"
 	"github.com/code-rcplaza/mail-checker/backend/internal/statements/adapters/bci"
 	"github.com/code-rcplaza/mail-checker/backend/internal/statements/adapters/extract"
 	statementshttp "github.com/code-rcplaza/mail-checker/backend/internal/statements/adapters/http"
@@ -66,7 +67,12 @@ func buildRouter(deps appDependencies) (http.Handler, error) {
 	statements := statementsHandlers(deps.db, statementsWiring{location: location, responder: responder})
 	subscriptions := subscriptionsHandlers(deps.db, responder)
 
+	site, err := web.Site()
+	if err != nil {
+		return nil, fmt.Errorf("embedded front: %w", err)
+	}
 	router := httpserver.NewRouter(deps.logger, deps.db.PingContext)
+	responder.MountFront(router, site)
 	auth.MountPublic(router)
 	router.Group(func(protected chi.Router) {
 		protected.Use(authhttp.RequireSession{Validate: authusecases.NewValidateSession(sessions, clock.Now), Responder: responder}.Handler)

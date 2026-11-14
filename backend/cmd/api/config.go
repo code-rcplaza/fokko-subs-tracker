@@ -3,19 +3,23 @@ package main
 import (
 	"fmt"
 	"log/slog"
+	"net"
 	"strconv"
 	"strings"
 )
 
 const (
-	envPort       = "MAILCHECKER_PORT"
-	envDBPath     = "MAILCHECKER_DB_PATH"
-	envMode       = "MAILCHECKER_ENV"
-	envResendKey  = "MAILCHECKER_RESEND_API_KEY"
-	envMailFrom   = "MAILCHECKER_MAIL_FROM"
-	modeDev       = "development"
-	modeProd      = "production"
-	defaultPort   = 8080
+	envPort      = "MAILCHECKER_PORT"
+	envHost      = "MAILCHECKER_HOST"
+	envDBPath    = "MAILCHECKER_DB_PATH"
+	envMode      = "MAILCHECKER_ENV"
+	envResendKey = "MAILCHECKER_RESEND_API_KEY"
+	envMailFrom  = "MAILCHECKER_MAIL_FROM"
+	modeDev      = "development"
+	modeProd     = "production"
+	defaultPort  = 8080
+	// Local by default; a container sets 0.0.0.0 so its port can be published.
+	defaultHost   = "127.0.0.1"
 	defaultDBPath = "data/mail-checker.db"
 	minPort       = 1
 	maxPort       = 65535
@@ -23,6 +27,7 @@ const (
 
 // Config is read once at startup; any invalid value stops the app (fail fast).
 type Config struct {
+	Host         string
 	Port         int
 	DBPath       string
 	IsProduction bool
@@ -48,6 +53,10 @@ type MailerConfig struct {
 func (m MailerConfig) UsesConsole() bool { return m.ResendAPIKey == "" }
 
 func LoadConfig(getenv func(string) string) (Config, error) {
+	host, err := readHost(getenv)
+	if err != nil {
+		return Config{}, err
+	}
 	port, err := readPort(getenv)
 	if err != nil {
 		return Config{}, err
@@ -64,7 +73,7 @@ func LoadConfig(getenv func(string) string) (Config, error) {
 	if err != nil {
 		return Config{}, err
 	}
-	return Config{Port: port, DBPath: dbPath, IsProduction: isProduction, Mailer: mailer}, nil
+	return Config{Host: host, Port: port, DBPath: dbPath, IsProduction: isProduction, Mailer: mailer}, nil
 }
 
 // readMode defaults to development: production is always set explicitly (Docker).
@@ -91,6 +100,18 @@ func readMailer(getenv func(string) string, isProduction bool) (MailerConfig, er
 		return MailerConfig{}, fmt.Errorf("%s is required in %s", envMailFrom, modeProd)
 	}
 	return mailer, nil
+}
+
+// readHost is the address to listen on: an IP, never a name to resolve.
+func readHost(getenv func(string) string) (string, error) {
+	raw := getenv(envHost)
+	if raw == "" {
+		return defaultHost, nil
+	}
+	if net.ParseIP(raw) == nil {
+		return "", fmt.Errorf("%s=%q: must be an IP address such as 127.0.0.1 or 0.0.0.0", envHost, raw)
+	}
+	return raw, nil
 }
 
 func readPort(getenv func(string) string) (int, error) {
