@@ -206,7 +206,7 @@ respeta las dependencias. ⛔ marca una decisión abierta que la bloquea.
 | FOKKO-0112B-SUBS | [Smoke test: de la cartola al resumen](FOKKO-0112B-SUBS-smoke-import-summary/idea.md) | done |
 | FOKKO-0112C-SUBS | [Smoke test: aislamiento entre usuarios](FOKKO-0112C-SUBS-smoke-isolation/idea.md) | done |
 | FOKKO-0112D-SUBS | [Smoke test: eliminar todo](FOKKO-0112D-SUBS-smoke-delete-all/idea.md) | done |
-| FOKKO-0113A-SUBS | [Textos legales ⛔ decisión 12](FOKKO-0113A-SUBS-legal-pages/idea.md) | todo |
+| FOKKO-0113A-SUBS | [Textos legales (Próximamente)](FOKKO-0113A-SUBS-legal-pages/idea.md) | done |
 | FOKKO-0113B-SUBS | [Pruebas de privacidad](FOKKO-0113B-SUBS-privacy-tests/idea.md) | done |
 | FOKKO-0114A-SUBS | [Embeber el front en el binario](FOKKO-0114A-SUBS-embed-front/idea.md) | done |
 | FOKKO-0114B-SUBS | [Respaldo de rutas del front](FOKKO-0114B-SUBS-spa-fallback/idea.md) | done |

@@ -13,6 +13,8 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as GuestRouteImport } from './routes/_guest'
 import { Route as SessionRouteImport } from './routes/_session'
 import { Route as CodigoRouteImport } from './routes/codigo'
+import { Route as PrivacidadRouteImport } from './routes/privacidad'
+import { Route as TerminosRouteImport } from './routes/terminos'
 import { Route as GuestEntrarRouteImport } from './routes/_guest/entrar'
 import { Route as GuestRegistroRouteImport } from './routes/_guest/registro'
 import { Route as SessionBienvenidaRouteImport } from './routes/_session/bienvenida'
@@ -45,6 +47,16 @@ const SessionRoute = SessionRouteImport.update({
 const CodigoRoute = CodigoRouteImport.update({
   id: '/codigo',
   path: '/codigo',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacidadRoute = PrivacidadRouteImport.update({
+  id: '/privacidad',
+  path: '/privacidad',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TerminosRoute = TerminosRouteImport.update({
+  id: '/terminos',
+  path: '/terminos',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GuestEntrarRoute = GuestEntrarRouteImport.update({
@@ -128,6 +140,8 @@ const SessionSubsLineKeyEditarRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/codigo': typeof CodigoRoute
+  '/privacidad': typeof PrivacidadRoute
+  '/terminos': typeof TerminosRoute
   '/entrar': typeof GuestEntrarRoute
   '/registro': typeof GuestRegistroRoute
   '/bienvenida': typeof SessionBienvenidaRoute
@@ -147,6 +161,8 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/codigo': typeof CodigoRoute
+  '/privacidad': typeof PrivacidadRoute
+  '/terminos': typeof TerminosRoute
   '/entrar': typeof GuestEntrarRoute
   '/registro': typeof GuestRegistroRoute
   '/bienvenida': typeof SessionBienvenidaRoute
@@ -169,6 +185,8 @@ export interface FileRoutesById {
   '/_guest': typeof GuestRouteWithChildren
   '/_session': typeof SessionRouteWithChildren
   '/codigo': typeof CodigoRoute
+  '/privacidad': typeof PrivacidadRoute
+  '/terminos': typeof TerminosRoute
   '/_guest/entrar': typeof GuestEntrarRoute
   '/_guest/registro': typeof GuestRegistroRoute
   '/_session/bienvenida': typeof SessionBienvenidaRoute
@@ -190,6 +208,8 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/codigo'
+    | '/privacidad'
+    | '/terminos'
     | '/entrar'
     | '/registro'
     | '/bienvenida'
@@ -209,6 +229,8 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/codigo'
+    | '/privacidad'
+    | '/terminos'
     | '/entrar'
     | '/registro'
     | '/bienvenida'
@@ -230,6 +252,8 @@ export interface FileRouteTypes {
     | '/_guest'
     | '/_session'
     | '/codigo'
+    | '/privacidad'
+    | '/terminos'
     | '/_guest/entrar'
     | '/_guest/registro'
     | '/_session/bienvenida'
@@ -252,6 +276,8 @@ export interface RootRouteChildren {
   GuestRoute: typeof GuestRouteWithChildren
   SessionRoute: typeof SessionRouteWithChildren
   CodigoRoute: typeof CodigoRoute
+  PrivacidadRoute: typeof PrivacidadRoute
+  TerminosRoute: typeof TerminosRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -282,6 +308,20 @@ declare module '@tanstack/react-router' {
       path: '/codigo'
       fullPath: '/codigo'
       preLoaderRoute: typeof CodigoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacidad': {
+      id: '/privacidad'
+      path: '/privacidad'
+      fullPath: '/privacidad'
+      preLoaderRoute: typeof PrivacidadRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terminos': {
+      id: '/terminos'
+      path: '/terminos'
+      fullPath: '/terminos'
+      preLoaderRoute: typeof TerminosRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_guest/entrar': {
@@ -444,6 +484,8 @@ const rootRouteChildren: RootRouteChildren = {
   GuestRoute: GuestRouteWithChildren,
   SessionRoute: SessionRouteWithChildren,
   CodigoRoute: CodigoRoute,
+  PrivacidadRoute: PrivacidadRoute,
+  TerminosRoute: TerminosRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

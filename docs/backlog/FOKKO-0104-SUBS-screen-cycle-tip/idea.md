@@ -19,13 +19,10 @@ clean architecture por feature (`features/subscriptions/{domain,application,infr
 ## Features afectadas
 - `frontend` (`features/subscriptions`)
 
-## Dudas abiertas
-- Texto puesto con la opción recomendada (solo fechas de cobro), **pendiente de aprobación del
-  usuario**: título "Optimización de ciclo sugerida"; "Se te juntan cobros el día 20 / los días 5 y 20.
-  Si prefieres repartir el gasto durante el mes, revisa si alguno de esos servicios te deja cambiar la
-  fecha de cobro." Cambiarlo es tocar `ui.cycle_tip.*` en `es.ts`.
-
 ## Dudas resueltas
+- Texto aprobado por el usuario (2026-11-14): título "Optimización de ciclo sugerida"; "Se te juntan
+  cobros el día 20 / los días 5 y 20. Si prefieres repartir el gasto durante el mes, revisa si alguno de
+  esos servicios te deja cambiar la fecha de cobro." Habla solo de fechas de cobro.
 - Cuándo hay concentración: un día del mes con 3 cobros o más entre los próximos 30 días
   (`minChargesOnOneDay`, en `domain/cycleTip.ts`), contando el día en hora de Santiago.
 

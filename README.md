@@ -442,7 +442,7 @@ de cambio, resumen, manuales, alzas, ajustes por línea y decisiones del usuario
 por correo, persistencia en SQLite, la API REST completa con pruebas de humo y de privacidad, todas las
 pantallas del front, el front embebido en el binario y la imagen Docker.
 
-**Pendiente:** los textos legales (términos y privacidad), la revisión visual de las pantallas en
+**Pendiente:** los textos legales (las páginas ya existen y dicen "Próximamente"), la revisión visual de las pantallas en
 dispositivos y elegir dónde publicarla. El avance exacto está en
 [`docs/backlog/README.md`](docs/backlog/README.md).
 

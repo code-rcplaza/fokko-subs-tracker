@@ -8,8 +8,12 @@ import { ForwardIcon, ShieldIcon } from "../../../../components/ui/atoms/icons";
 import { FormField } from "../../../../components/ui/molecules/FormField";
 import { t } from "../../../../lib/i18n/translate";
 
-/** Where Login lives; the terms link waits for the legal pages (FOKKO-0113A-SUBS). */
+/** Where Login lives, and the legal pages (FOKKO-0113A-SUBS). */
 export const loginPath = "/entrar";
+export const termsPath = "/terminos";
+export const privacyPath = "/privacidad";
+
+const legalLinkClasses = "inline-flex min-h-11 items-center text-sm font-semibold text-primary underline";
 
 export interface RegisterFormProps {
   readonly fields: {
@@ -72,7 +76,17 @@ export function RegisterForm({
           </span>
           {t("ui.register.privacy")}
         </p>
-        <Checkbox {...fields.acceptedTerms} label={t("ui.register.terms")} error={errors.acceptedTerms} />
+        <div className="flex flex-col gap-1">
+          <Checkbox {...fields.acceptedTerms} label={t("ui.register.terms")} error={errors.acceptedTerms} />
+          <p className="flex flex-wrap gap-x-4">
+            <AppLink to={termsPath} onNavigate={onNavigate} className={legalLinkClasses}>
+              {t("ui.legal.read_terms")}
+            </AppLink>
+            <AppLink to={privacyPath} onNavigate={onNavigate} className={legalLinkClasses}>
+              {t("ui.legal.read_privacy")}
+            </AppLink>
+          </p>
+        </div>
         {formError !== undefined && (
           <p role="alert" className="rounded-md bg-error-surface p-4 text-sm text-danger-ink">
             {formError}

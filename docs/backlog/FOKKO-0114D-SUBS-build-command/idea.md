@@ -18,13 +18,11 @@ Esta idea cubre solo: Comando de build único. El resto del trabajo original est
 - `internal/shared` (`httpserver/web`)
 - `frontend` (build)
 
-## Dudas abiertas
-- Falta agregar `make build` a "Comandos" de `CLAUDE.md` (criterio 3): editar `CLAUDE.md` se pregunta antes.
-
 ## Dudas resueltas
 - `Makefile` en la raíz: `make build` corre `pnpm install --frozen-lockfile && pnpm build` (al embed)
   y después `go build -o backend/bin/mail-checker ./cmd/api`; `make` se detiene en la primera falla.
 - El reemplazo versionado del embed: ver FOKKO-0114A-SUBS.
+- `make build` (y `docker compose up --build`) quedaron en "Comandos" de `CLAUDE.md`, con el ok del usuario.
 
 ## Tareas
 - [x] [TASK-001 Un solo comando de build](TASK-001-BUILD-COMMAND.md)

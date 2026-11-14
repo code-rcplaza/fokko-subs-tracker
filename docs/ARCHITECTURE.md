@@ -915,6 +915,8 @@ frontend/src/
 - **Imagen:** `Dockerfile` multi-stage (Node para el front, Go sin cgo, final distroless `nonroot`):
   solo el binario; datos en el volumen `/data` (`MAILCHECKER_DB_PATH=/data/mail-checker.db`), escucha en
   `MAILCHECKER_HOST=0.0.0.0` y el puerto 8080 y `HEALTHCHECK` con `mail-checker health`. Una sola réplica (SQLite).
+- **Páginas legales:** `/terminos` y `/privacidad` abren sin sesión (fuera de `_guest` y `_session`);
+  por ahora dicen "Próximamente" hasta que lleguen los textos (decisión 12). Registro enlaza a las dos.
 - **Formularios:** react-hook-form con `zodResolver` (`@hookform/resolvers`) en el hook de
   `application`; los mensajes del esquema son llaves i18n, igual que las del back. Un 400 con
   `fields` pone cada llave en su campo (`serverFieldErrors`); cualquier otro error va arriba del

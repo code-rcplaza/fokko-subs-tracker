@@ -234,3 +234,7 @@ Frontend (desde `frontend/`, con pnpm):
 - Dev: `pnpm dev` (Vite en :5173, `/api` va a Go en :8080)
 - Test: `pnpm test` · Lint y formato: `pnpm lint` · Tipos: `pnpm typecheck`
 - Build: `pnpm build` (deja el sitio en `backend/internal/shared/httpserver/web/dist`)
+
+Todo junto (desde la raíz):
+- Build: `make build` (front, y después el binario `backend/bin/mail-checker` con el front embebido)
+- Docker: `docker compose up --build` (la app en `:8080`, datos en el volumen `fokko-data`)
