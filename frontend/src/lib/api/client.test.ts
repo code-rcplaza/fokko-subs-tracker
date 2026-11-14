@@ -114,4 +114,27 @@ describe("api client", () => {
     expect(init?.body).toBe(form);
     expect(init?.headers).toBeUndefined();
   });
+
+  it("downloads a file with the name of its Content-Disposition", async () => {
+    const headers = {
+      "Content-Disposition": 'attachment; filename="fokko-copia.csv"',
+      "Content-Type": "text/csv",
+    };
+    const client = createApiClient(async () => new Response("name,amount\n", { status: 200, headers }));
+
+    const file = await client.getFile("/api/export?format=csv");
+
+    expect(file.filename).toBe("fokko-copia.csv");
+    expect(await file.blob.text()).toBe("name,amount\n");
+  });
+
+  it("throws the API error of a failed download", async () => {
+    const body = JSON.stringify({ error: { key: "common.internal" } });
+    const client = createApiClient(async () => new Response(body, { status: 500 }));
+
+    await expect(client.getFile("/api/export")).rejects.toMatchObject({
+      status: 500,
+      key: "common.internal",
+    });
+  });
 });

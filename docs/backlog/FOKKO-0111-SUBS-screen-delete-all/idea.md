@@ -19,15 +19,20 @@ clean architecture por feature (`features/profile/{domain,application,infrastruc
 ## Features afectadas
 - `frontend` (`features/profile`)
 
-## Dudas abiertas
-- Ninguna.
+## Dudas resueltas
+- `/perfil/eliminar`, desde "Tus datos" de Perfil (el handoff lo colgaba de Fuentes, post-MVP).
+- La copia se baja con `getFile` de `lib/api` (blob y nombre de `Content-Disposition`) y `saveFile`
+  de `lib/files`, para poder avisar si falla; un fallo no bloquea eliminar.
+- Lo que se borra se lista según la base (cuenta, suscripciones con cobros y decisiones, registro de
+  cartolas); sin la dirección del buzón del handoff (post-MVP).
+- Confirmación con `ConfirmDialog`; tras el 204, `queryClient.clear()` y a `/registro`.
 
 ## Tareas
-- [ ] [TASK-001 Descargar la copia](TASK-001-EXPORT-DOWNLOAD.md)
-- [ ] [TASK-002 Confirmación](TASK-002-DELETE-ALL-CONFIRM.md)
-- [ ] [TASK-003A Llamar a `DELETE /api/me`](TASK-003A-DELETE-CALL.md)
-- [ ] [TASK-003B Salir tras eliminar](TASK-003B-DELETE-SUCCESS.md)
-- [ ] [TASK-003C Error al eliminar](TASK-003C-DELETE-FAILURE.md)
-- [ ] [TASK-004 Exportar por HTTP](TASK-004-GATEWAY-EXPORT.md)
-- [ ] [TASK-005 Eliminar todo por HTTP](TASK-005-GATEWAY-DELETE-ALL.md)
-- [ ] [TASK-006 Conectar el hook con los componentes](TASK-006-CONTAINER-DELETE-ALL.md)
+- [x] [TASK-001 Descargar la copia](TASK-001-EXPORT-DOWNLOAD.md)
+- [x] [TASK-002 Confirmación](TASK-002-DELETE-ALL-CONFIRM.md)
+- [x] [TASK-003A Llamar a `DELETE /api/me`](TASK-003A-DELETE-CALL.md)
+- [x] [TASK-003B Salir tras eliminar](TASK-003B-DELETE-SUCCESS.md)
+- [x] [TASK-003C Error al eliminar](TASK-003C-DELETE-FAILURE.md)
+- [x] [TASK-004 Exportar por HTTP](TASK-004-GATEWAY-EXPORT.md)
+- [x] [TASK-005 Eliminar todo por HTTP](TASK-005-GATEWAY-DELETE-ALL.md)
+- [x] [TASK-006 Conectar el hook con los componentes](TASK-006-CONTAINER-DELETE-ALL.md)

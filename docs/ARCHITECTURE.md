@@ -113,7 +113,7 @@ backend/
     │   │   └── sqlite/              ChargeReader, SubscriptionDecisions, LineAliases, ManualSubscriptions, LineOverrides, PriceAlertDecisions, HiddenLines, Cancellations, ExchangeRates
     │   ├── domain/                  Subscription, Summary, Reconciliation, reglas de recurrencia y de coincidencia
     │   ├── ports/                   ChargeReader, ServiceCatalog, SubscriptionDecisions, LineAliases, ManualSubscriptions, LineOverrides, PriceAlertDecisions, Cancellations, ExchangeRates
-    │   └── usecases/                get_summary, decide_possible_subscription, undo_decision, name_line, manuales, overrides, alzas, cancelaciones (reconcile_charges: post-MVP)
+    │   └── usecases/                get_summary, get_line_detail, decide_possible_subscription, undo_decision, name_line, manuales, overrides, alzas, cancelaciones (reconcile_charges: post-MVP)
     │
     └── shared/
         ├── domain/                  Money, Currency, Bank, Card, Source, Charge, ParsedCharge, errores
@@ -700,7 +700,7 @@ pedir sesión.
 | GET | `/api/export?format=csv` | auth + puente | copia de los datos (mvp.md decisión 13), como adjunto `fokko-copia.csv` o `.json`. `csv` (por defecto): las suscripciones del resumen, columnas `name, alias, amount` (2 decimales)`, currency, cadence, nextCharge` (AAAA-MM-DD); un campo que empieza con `=`, `+`, `-`, `@`, tab o CR lleva `'` delante. `json`: `{profile, statements, charges, decisions, aliases, manuals, overrides}` con ids públicos, fechas unix s y montos `{amount, currency}`. Otro formato: 400 `fields:{format:"auth.export_format_unknown"}` |
 | GET | `/api/banks` | statements | `[{id}]` con los bancos registrados; el nombre visible lo pone el front con i18n |
 | POST | `/api/statements` | statements | multipart: `file` (uno), `billingDate` opcional (unix s), `bank` opcional; 201 `{id, filename, months:["AAAA-MM"], charges, badLines}` (`badLines` es la cantidad). Hasta 10 MB (`statements.file_too_large`) y 60 s para leer e importar; no multipart es `common.invalid_request` |
-| GET | `/api/summary?months=12` | subscriptions | `months` 1 a 24 (12 si falta). `{subscriptions, possible, total, charged, remaining, rises, pendingActions, upcoming}`: montos `{amount, currency}` en centésimas, fechas unix s (`null` si no hay), listas vacías como `[]`. Sin inactivas, otros cobros ni ids internos |
+| GET | `/api/summary?months=12` | subscriptions | `months` 1 a 24 (12 si falta). `{subscriptions, possible, total, charged, remaining, rises, pendingActions, upcoming, spend}` (`spend`: los cinco servicios que más pesan al mes en pesos y "Otros", `{name, amount, percent, isOthers}`): montos `{amount, currency}` en centésimas, fechas unix s (`null` si no hay), listas vacías como `[]`. Sin inactivas, otros cobros ni ids internos |
 | POST | `/api/subscriptions/decisions` | subscriptions | `{groupKey, decision, cadence?}` (`confirm` con `monthly`/`yearly`, o `dismiss`): confirmar o descartar una posible; 204. Una clave que no es posible hoy es 404 `subscriptions.possible_not_found` |
 | DELETE | `/api/subscriptions/decisions?groupKey=` | subscriptions | deshace la decisión; la línea vuelve a posibles; 204 aunque no hubiera decisión |
 | PUT | `/api/subscriptions/aliases` | subscriptions | `{lineKey, alias}`: nombra una línea; alias vacío lo borra; 204 |
@@ -709,6 +709,7 @@ pedir sesión.
 | PUT, DELETE | `/api/subscriptions/manual/{publicId}` | subscriptions | edita (mismo cuerpo que crear) o quita una manual; 204. Ajena, inexistente o id mal formado: 404 |
 | DELETE | `/api/subscriptions/line?lineKey=` | subscriptions | "dejar de seguir": oculta la línea (mvp.md decisión 10); 204, también si ya estaba oculta |
 | POST | `/api/subscriptions/price-alerts/decision` | subscriptions | `{lineKey}`: el usuario mantiene la suscripción tras el alza; 204. Sin alza vigente: 404 `subscriptions.rise_not_found` |
+| GET | `/api/subscriptions/line?lineKey=` | subscriptions | el detalle de una suscripción: la línea como en el resumen, `cycle {day, month}` (`month` 1–12 solo si es anual), `charges` (los últimos 6, más reciente primero, `{date, amount, inPesos}`) y `rise` o `null`. Una posible o una clave sin línea: 404 `subscriptions.line_not_found` |
 | GET | `/api/subscriptions/cancel-guide?lineKey=` | subscriptions | `{url}` del sitio del servicio (catálogo); `url` vacío si el comercio no tiene enlace |
 | POST | `/api/subscriptions/cancellations` | subscriptions | `{lineKey}`: marca la línea como "por cancelar"; 204 |
 
@@ -793,7 +794,7 @@ frontend/src/
 ├── components/
 │   ├── ui/                    componentes de base presentacionales, por Atomic Design (lista en `docs/mvp.md`):
 │   │   ├── atoms/             una sola pieza: Button, Input, Checkbox, Badge, ServiceAvatar, Skeleton, AnimatedNumber, AppLink, icons
-│   │   ├── molecules/         atoms juntos con un fin: FormField, CodeInput, ResendTimer, ListRow, SegmentedControl, Toast, EmptyState, Card
+│   │   ├── molecules/         atoms juntos con un fin: FormField, CodeInput, ResendTimer, ListRow, SegmentedControl, Toast, EmptyState, Card, ConfirmDialog
 │   │   └── organisms/         bloques completos y genéricos: SegmentedRing (geometría pura en ringGeometry.ts)
 │   └── layout/                templates: AppShell, BrandHeader, BottomNav, SideNav, BackLink, StepIndicator;
 │                              y navigation.ts (rutas de las secciones); AppLink es un atom
@@ -806,13 +807,14 @@ frontend/src/
 │       ├── components/        presentacionales
 │       └── screens/           contenedores: llaman hooks y pasan props
 └── lib/
-    ├── api/                   client.ts (JSON, o un FormData tal cual) y serverErrors.ts (llave de un campo, mensaje del formulario)
+    ├── api/                   client.ts (JSON, o un FormData tal cual; getFile para adjuntos) y serverErrors.ts (llave de un campo, mensaje del formulario)
+    ├── files/                 saveFile (entrega un archivo descargado al navegador)
     ├── gateways/              `GatewaysProvider`, `useGateways`, `renderWithGateways` (pruebas)
     ├── query/                 createQueryClient (reintentos y aviso de 401)
     ├── router/                useNavigateTo (lo que las pantallas pasan a `AppLink`)
     ├── format.ts              montos y fechas (es-CL)
     ├── i18n/                  es.ts (catálogo tipado de llaves) + t(key, params)
-    └── theme/                 preferencia claro/oscuro/sistema (localStorage; si falla, sistema) y useThemeToggle
+    └── theme/                 preferencia claro/oscuro/sistema (localStorage; si falla, sistema), useThemeToggle y useThemePreference
 ```
 
 - **Atomic Design:** atoms → molecules → organisms en `components/ui`; los templates son
@@ -842,9 +844,69 @@ frontend/src/
   `multipart` con `file` y solo los campos presentes; la fecha de facturación aparece solo tras
   `statements.billing_date_required` y va en unix segundos al mediodía UTC, para que ningún huso
   mueva el día. Si `GET /api/banks` falla, el selector queda en automático. Mientras sube, la
-  misma pantalla muestra Cargando; al responder, el resultado queda en la caché y se abre
+  misma pantalla muestra Cargando, y si falla, Error (título por tipo de falla, mensaje de la llave,
+  nunca texto del archivo; "Elegir el banco" conserva el archivo); al responder, el resultado queda en la caché y se abre
   `/analisis/<id>`, que suma los conteos de `GET /api/summary` (seguras y por confirmar) leídos
   por el gateway de statements con su propio esquema, para no importar subscriptions.
+- **Revisión:** `/revision` lee las posibles de `GET /api/summary` (gateway de subscriptions,
+  clave `["subscriptions","possible"]`). Lo decidido en cada tarjeta (por decidir, eligiendo cadencia,
+  agregada, descartada) es estado de la pantalla, no de la caché: una línea confirmada sale de las
+  posibles en el servidor, pero su tarjeta queda con "Deshacer". Por eso, tras decidir o deshacer, las
+  claves `["subscriptions"]` solo se marcan viejas (`refetchType: "none"`) y Resumen las relee al abrirse.
+  "Sí" pide la cadencia (mensual o anual, `SegmentedControl`, sin valor por defecto) antes de enviar; un
+  error devuelve la tarjeta a por decidir con el mensaje en la tarjeta; un toque repetido mientras
+  viaja no manda otra llamada. La evidencia es el texto del comercio, el día del último cargo (hora de
+  Santiago) y cuántos cargos se vieron. Un monto en USD se muestra tal cual: el resumen no trae su
+  equivalente en pesos para las posibles. Sin posibles, la misma pantalla es Revisión vacía.
+- **Resumen:** `/resumen` lee `GET /api/summary` completo (clave `["subscriptions","summary"]`, que
+  una decisión de Revisión marca vieja). Zona: saludo con el primer nombre, "Llevas N cobros este mes
+  y te quedan M" (no aparece con 0 y 0), el anillo de 224 px con `spend` (cinco servicios con las
+  series 1 a 5 y "Otros" con la 6) y el total que cuenta hasta su valor (`≈` si es aproximado; aviso
+  si faltan los dólares), y la leyenda con porcentajes. Hoja: próximo cobro, acciones pendientes
+  (alza → `/alerta/<lineKey>`, posible → `/revision`) y próximos cobros por fecha (cada fila →
+  `/subs/<lineKey>`). Sin suscripciones ni posibles, el estado vacío lleva a `/fuente`. Fechas en
+  `America/Santiago` ("mié 18 nov", `formatChargeDate`). Al final, `CycleTip` aparece si un día del
+  mes junta 3 cobros o más entre los próximos (`minChargesOnOneDay`); habla solo de fechas de cobro,
+  nunca del banco.
+- **Subs:** `/subs` usa la misma consulta del resumen (`select` de líneas y total). Zona: "N activas ·
+  $X al mes" y "Agregar" (`/subs/agregar`). Lista por próximo cobro (sin fecha al final); cada fila
+  lleva a `/subs/<lineKey>` con nombre o alias, fecha, banco y tarjeta, monto (dólares con su
+  equivalente "≈") y las marcas "Por cancelar" y "Alza" en palabras.
+- **Detalle:** `/subs/<lineKey>` lee `GET /api/subscriptions/line` (clave
+  `["subscriptions","line",lineKey]`). Zona: volver a Subs, el monto en un anillo de 176 px ("al mes" o
+  "al año") y el nombre (con alias, también el servicio). Hoja: el bloque de alza si hay (antes,
+  después, desde cuándo, impacto mensual y anual, cambio de plan), próximo cobro y ciclo ("Mensual, cada
+  15 del mes" / "Anual, cada 15 de marzo"), los últimos cobros en el orden del back, y los enlaces a
+  Editar (`/subs/<lineKey>/editar`) y Cómo cancelar (`/subs/<lineKey>/cancelar`). Bottom nav: Subs.
+  "Dejar de seguir" abre `ConfirmDialog` (`<dialog>` nativo modal; Esc, tocar fuera o Cancelar lo
+  cierran y devuelven el foco; el scroll de fondo queda bloqueado); al confirmar, `DELETE
+  /api/subscriptions/line`, se releen las claves `["subscriptions"]` y vuelve a Subs.
+- **Agregar:** `/subs/agregar` (ruta fija, gana a `/subs/<lineKey>`): nombre, moneda (CLP o USD),
+  monto mensual y día de cobro con `manualFormSchema` (límites del back: 40 caracteres, día 1–31); el
+  monto se escribe como en Chile y viaja en centavos. Al crear, se releen `["subscriptions"]` y vuelve
+  a Subs.
+- **Editar:** `/subs/<lineKey>/editar`. Línea detectada: nombre (alias; vacío lo borra), monto en su
+  moneda y día; se envía solo lo que cambió (`PUT aliases`, luego `PUT overrides` con monto y día).
+  Con `?desde=revision` la línea sale de las posibles y al guardar vuelve a Revisión; si no, a Detalle.
+  Manual (`manual:<publicId>`): el formulario de Agregar con `PUT /api/subscriptions/manual/<id>` y
+  "Quitar" (confirmación, `DELETE`, vuelve a Subs).
+- **Alerta:** `/alerta/<lineKey>` usa el detalle de la línea: "+N %" en el anillo, antes y después
+  (en USD con "≈ $"), desde cuándo, el impacto mensual y anual y si parece cambio de plan. "Mantener"
+  (`POST /api/subscriptions/price-alerts/decision`) relee `["subscriptions"]` y vuelve a Resumen; "Ver
+  cómo cancelar" va a `/subs/<lineKey>/cancelar`. Sin "más tarde" en el MVP.
+- **Cómo cancelar:** `/subs/<lineKey>/cancelar`: tres pasos fijos con el nombre del servicio, el enlace
+  de `GET /api/subscriptions/cancel-guide` solo si es `https` (otra pestaña, `noopener noreferrer`; si
+  no, un consejo genérico) y "La voy a cancelar" (`POST /api/subscriptions/cancellations`); con la marca
+  guardada muestra la fecha y el botón queda deshabilitado.
+- **Perfil:** `/perfil` (feature `profile`): la cuenta del contexto de sesión, "Tus datos" (lleva a
+  `/perfil/eliminar`), Apariencia (Claro, Oscuro, Sistema; `useThemePreference`, solo navegador) y
+  "Cerrar sesión" (vacía la caché pase lo que pase y va a `/entrar`). Sin filas post-MVP.
+- **Eliminar todo:** `/perfil/eliminar`: lista lo que se borra, "Descargar copia primero" (CSV por
+  defecto o JSON; `GET /api/export` como archivo con `getFile` y `saveFile`; si falla, avisa y no
+  bloquea) y "Sí, eliminar todo" con `ConfirmDialog`; tras `DELETE /api/me`, la caché se vacía y va a
+  `/registro`.
+- **Pruebas lentas:** las pantallas montan la app entera; con la máquina cargada, `asyncUtilTimeout`
+  es 5 s (`src/test/setup.ts`) y `testTimeout` 15 s (`vite.config.ts`).
 - **Formularios:** react-hook-form con `zodResolver` (`@hookform/resolvers`) en el hook de
   `application`; los mensajes del esquema son llaves i18n, igual que las del back. Un 400 con
   `fields` pone cada llave en su campo (`serverFieldErrors`); cualquier otro error va arriba del

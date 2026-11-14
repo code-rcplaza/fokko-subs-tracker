@@ -3,7 +3,11 @@ import { type ApiClient, ApiError, createApiClient } from "../../../lib/api/clie
 import { createHttpAuthGateway } from "./httpAuthGateway";
 
 function apiAnswering(body: unknown): ApiClient {
-  return { get: async () => body, send: async () => undefined };
+  return {
+    get: async () => body,
+    send: async () => undefined,
+    getFile: () => Promise.reject(new Error("auth downloads no files")),
+  };
 }
 
 function fetchAnswering(status: number, body?: unknown) {

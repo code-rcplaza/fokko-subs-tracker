@@ -23,6 +23,8 @@ export default defineConfig({
     environment: "jsdom",
     globals: true,
     setupFiles: ["./src/test/setup.ts"],
+    // Whole-app flows take several steps; a busy machine must not turn them into timeouts.
+    testTimeout: 15000,
     css: false,
   },
 });

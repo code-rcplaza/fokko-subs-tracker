@@ -19,12 +19,16 @@ clean architecture por feature (`features/subscriptions/{domain,application,infr
 ## Features afectadas
 - `frontend` (`features/subscriptions`)
 
-## Dudas abiertas
-- Ninguna.
+## Dudas resueltas
+- Un solo botón, "La voy a cancelar" (el back guarda una sola marca; "Ya la cancelé" haría lo mismo).
+- Fuera del handoff por ser post-MVP: reenviar el correo de cancelación al buzón y la proyección del
+  gasto. La línea sigue sumando mientras lleguen cobros (ARCHITECTURE).
+- El enlace solo abre si es `https` (`safeCancelUrlOf`), en otra pestaña con `noopener noreferrer`.
+- Volver lleva a Detalle de la línea (Cómo cancelar se abre desde Detalle y desde Alerta).
 
 ## Tareas
-- [ ] [TASK-001 `CancelSteps`](TASK-001-CANCEL-STEPS.md)
-- [ ] [TASK-002 Enlace al sitio del servicio](TASK-002-CANCEL-LINK.md)
-- [ ] [TASK-003 Marcar "por cancelar"](TASK-003-MARK-CANCELLATION.md)
-- [ ] [TASK-004 Marcar por cancelar por HTTP](TASK-004-GATEWAY-MARK-CANCEL.md)
-- [ ] [TASK-005 Conectar el hook con los componentes](TASK-005-CONTAINER-CANCEL.md)
+- [x] [TASK-001 `CancelSteps`](TASK-001-CANCEL-STEPS.md)
+- [x] [TASK-002 Enlace al sitio del servicio](TASK-002-CANCEL-LINK.md)
+- [x] [TASK-003 Marcar "por cancelar"](TASK-003-MARK-CANCELLATION.md)
+- [x] [TASK-004 Marcar por cancelar por HTTP](TASK-004-GATEWAY-MARK-CANCEL.md)
+- [x] [TASK-005 Conectar el hook con los componentes](TASK-005-CONTAINER-CANCEL.md)

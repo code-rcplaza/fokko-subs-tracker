@@ -22,11 +22,15 @@ clean architecture por feature (`features/profile/{domain,application,infrastruc
 ## Features afectadas
 - `frontend` (`features/profile`)
 
-## Dudas abiertas
-- Las filas post-MVP no se muestran, para no ofrecer lo que no funciona.
+## Dudas resueltas
+- Las filas post-MVP (Cuentas de correo, Notificaciones) no se muestran, ni la versión.
+- Nueva feature `profile` con su puerto `ProfileGateway` (`logout`); el cierre de sesión es una copia
+  del de auth, porque una feature no importa otra.
+- La cuenta viene del contexto de la ruta de sesión (`me`), no de otra petición.
+- "Tus datos" lleva a `/perfil/eliminar` (FOKKO-0111-SUBS); "Descargar copia" no está en esta idea.
 
 ## Tareas
-- [ ] [TASK-001 `ProfileHeader`](TASK-001-PROFILE-HEADER.md)
-- [ ] [TASK-002A Filas de Perfil](TASK-002A-PROFILE-ROWS.md)
-- [ ] [TASK-002B Fila Cerrar sesión](TASK-002B-PROFILE-LOGOUT-ROW.md)
-- [ ] [TASK-003 Conectar el hook con los componentes](TASK-003-CONTAINER-PROFILE.md)
+- [x] [TASK-001 `ProfileHeader`](TASK-001-PROFILE-HEADER.md)
+- [x] [TASK-002A Filas de Perfil](TASK-002A-PROFILE-ROWS.md)
+- [x] [TASK-002B Fila Cerrar sesión](TASK-002B-PROFILE-LOGOUT-ROW.md)
+- [x] [TASK-003 Conectar el hook con los componentes](TASK-003-CONTAINER-PROFILE.md)

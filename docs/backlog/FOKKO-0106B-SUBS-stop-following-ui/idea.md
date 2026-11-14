@@ -21,12 +21,16 @@ clean architecture por feature (`features/subscriptions/{domain,application,infr
 ## Features afectadas
 - `frontend` (`features/subscriptions`)
 
-## Dudas abiertas
-- Falta el diseño de Detalle sin alza; se propone el mismo bloque sin la tarjeta de alza.
-- La confirmación de "dejar de seguir" es un diálogo: hay que cuidar foco, Esc y bloqueo de scroll a mano. Si resulta frágil se propone Radix Primitives como dependencia.
+## Dudas resueltas
+- Detalle sin alza: resuelto en FOKKO-0106A-SUBS.
+- Diálogo sin Radix: `<dialog>` nativo con `showModal()` (el navegador atrapa el foco, deja inerte el
+  fondo y convierte Esc en `cancel`); el componente cierra al tocar fuera, bloquea el scroll y devuelve
+  el foco. jsdom no tiene `showModal`: `src/test/setup.ts` trae un shim que solo abre y cierra.
+- `ConfirmDialog` queda como molécula en `components/ui/molecules` (también la usará Eliminar todo).
+- Si falla, el diálogo queda abierto con el mensaje; mientras viaja no se cierra.
 
 ## Tareas
-- [ ] [TASK-001A Pedir confirmación](TASK-001A-STOP-CONFIRM.md)
-- [ ] [TASK-001B Accesibilidad del diálogo](TASK-001B-STOP-DIALOG-A11Y.md)
-- [ ] [TASK-002 Dejar de seguir por HTTP](TASK-002-GATEWAY-STOP-FOLLOWING.md)
-- [ ] [TASK-003 Conectar el hook con los componentes](TASK-003-CONTAINER-STOP.md)
+- [x] [TASK-001A Pedir confirmación](TASK-001A-STOP-CONFIRM.md)
+- [x] [TASK-001B Accesibilidad del diálogo](TASK-001B-STOP-DIALOG-A11Y.md)
+- [x] [TASK-002 Dejar de seguir por HTTP](TASK-002-GATEWAY-STOP-FOLLOWING.md)
+- [x] [TASK-003 Conectar el hook con los componentes](TASK-003-CONTAINER-STOP.md)

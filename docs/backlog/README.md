@@ -183,20 +183,20 @@ respeta las dependencias. ⛔ marca una decisión abierta que la bloquea.
 | FOKKO-0099-SUBS | [Subir cartola](FOKKO-0099-SUBS-screen-upload/idea.md) | done |
 | FOKKO-0100A-SUBS | [Pantalla Cargando](FOKKO-0100A-SUBS-screen-loading/idea.md) | done |
 | FOKKO-0100B-SUBS | [Pantalla Análisis](FOKKO-0100B-SUBS-screen-analysis-result/idea.md) | done |
-| FOKKO-0101-SUBS | [Error de lectura](FOKKO-0101-SUBS-screen-upload-error/idea.md) | todo |
-| FOKKO-0102-SUBS | [Revisión (con selector de cadencia)](FOKKO-0102-SUBS-screen-review/idea.md) | todo |
-| FOKKO-0103-SUBS | [Resumen](FOKKO-0103-SUBS-screen-summary/idea.md) | todo |
-| FOKKO-0104-SUBS | [`CycleTip` con el texto corregido](FOKKO-0104-SUBS-screen-cycle-tip/idea.md) | todo |
-| FOKKO-0105-SUBS | [Subs](FOKKO-0105-SUBS-screen-subs/idea.md) | todo |
-| FOKKO-0106A-SUBS | [Detalle de una línea (con o sin alza)](FOKKO-0106A-SUBS-detail-line/idea.md) | todo |
-| FOKKO-0106B-SUBS | [Dejar de seguir](FOKKO-0106B-SUBS-stop-following-ui/idea.md) | todo |
-| FOKKO-0107A-SUBS | [Agregar una suscripción manual](FOKKO-0107A-SUBS-add-manual/idea.md) | todo |
-| FOKKO-0107B-SUBS | [Editar una suscripción](FOKKO-0107B-SUBS-edit-subscription/idea.md) | todo |
-| FOKKO-0108-SUBS | [Alerta de alza](FOKKO-0108-SUBS-screen-price-alert/idea.md) | todo |
-| FOKKO-0109-SUBS | [Cómo cancelar](FOKKO-0109-SUBS-screen-cancel-guide/idea.md) | todo |
-| FOKKO-0110A-SUBS | [Perfil](FOKKO-0110A-SUBS-profile/idea.md) | todo |
-| FOKKO-0110B-SUBS | [Apariencia](FOKKO-0110B-SUBS-appearance/idea.md) | todo |
-| FOKKO-0111-SUBS | [Eliminar todo](FOKKO-0111-SUBS-screen-delete-all/idea.md) | todo |
+| FOKKO-0101-SUBS | [Error de lectura](FOKKO-0101-SUBS-screen-upload-error/idea.md) | done |
+| FOKKO-0102-SUBS | [Revisión (con selector de cadencia)](FOKKO-0102-SUBS-screen-review/idea.md) | done |
+| FOKKO-0103-SUBS | [Resumen](FOKKO-0103-SUBS-screen-summary/idea.md) | done |
+| FOKKO-0104-SUBS | [`CycleTip` con el texto corregido](FOKKO-0104-SUBS-screen-cycle-tip/idea.md) | done |
+| FOKKO-0105-SUBS | [Subs](FOKKO-0105-SUBS-screen-subs/idea.md) | done |
+| FOKKO-0106A-SUBS | [Detalle de una línea (con o sin alza)](FOKKO-0106A-SUBS-detail-line/idea.md) | done |
+| FOKKO-0106B-SUBS | [Dejar de seguir](FOKKO-0106B-SUBS-stop-following-ui/idea.md) | done |
+| FOKKO-0107A-SUBS | [Agregar una suscripción manual](FOKKO-0107A-SUBS-add-manual/idea.md) | done |
+| FOKKO-0107B-SUBS | [Editar una suscripción](FOKKO-0107B-SUBS-edit-subscription/idea.md) | done |
+| FOKKO-0108-SUBS | [Alerta de alza](FOKKO-0108-SUBS-screen-price-alert/idea.md) | done |
+| FOKKO-0109-SUBS | [Cómo cancelar](FOKKO-0109-SUBS-screen-cancel-guide/idea.md) | done |
+| FOKKO-0110A-SUBS | [Perfil](FOKKO-0110A-SUBS-profile/idea.md) | done |
+| FOKKO-0110B-SUBS | [Apariencia](FOKKO-0110B-SUBS-appearance/idea.md) | done |
+| FOKKO-0111-SUBS | [Eliminar todo](FOKKO-0111-SUBS-screen-delete-all/idea.md) | done |
 
 ### G. Cierre
 
@@ -221,6 +221,8 @@ respeta las dependencias. ⛔ marca una decisión abierta que la bloquea.
 | # | Idea | Estado |
 |---|---|---|
 | FOKKO-0118-SUBS | [Guardar el tipo de cambio derivado al importar una cartola](FOKKO-0118-SUBS-record-exchange-rate/idea.md) | done |
+| FOKKO-0119-SUBS | [El reparto por servicio en `GET /api/summary`](FOKKO-0119-SUBS-summary-spend-response/idea.md) | done |
+| FOKKO-0120-SUBS | [`GET /api/subscriptions/line`: el detalle de una línea](FOKKO-0120-SUBS-line-detail-endpoint/idea.md) | done |
 
 ### Post-MVP (sin número aún)
 

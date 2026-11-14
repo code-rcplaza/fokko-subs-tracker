@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatMoney, formatMonth, formatMonths } from "./format";
+import { formatChargeDate, formatDayMonth, formatMoney, formatMonth, formatMonths } from "./format";
 
 describe("formatMoney", () => {
   it.each([
@@ -28,5 +28,20 @@ describe("formatMonths", () => {
     [["2026-08", "2026-09", "2026-10"], "agosto de 2026, septiembre de 2026 y octubre de 2026"],
   ])("joins %j", (months, text) => {
     expect(formatMonths(months)).toBe(text);
+  });
+});
+
+describe("formatChargeDate", () => {
+  it.each([
+    { name: "a day in November", unix: Date.UTC(2026, 10, 18, 15) / 1000, text: "mié 18 nov" },
+    { name: "the day in Santiago, not in UTC", unix: Date.UTC(2026, 10, 19, 2) / 1000, text: "mié 18 nov" },
+  ])("writes $name as '$text'", ({ unix, text }) => {
+    expect(formatChargeDate(unix)).toBe(text);
+  });
+});
+
+describe("formatDayMonth", () => {
+  it("writes the day and the short month in Santiago", () => {
+    expect(formatDayMonth(Date.UTC(2025, 11, 15, 15) / 1000)).toBe("15 dic");
   });
 });

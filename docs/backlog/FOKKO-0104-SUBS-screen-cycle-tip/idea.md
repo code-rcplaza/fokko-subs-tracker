@@ -20,8 +20,15 @@ clean architecture por feature (`features/subscriptions/{domain,application,infr
 - `frontend` (`features/subscriptions`)
 
 ## Dudas abiertas
-- El texto nuevo lo define el usuario; la tarea no lo inventa. Opciones a proponer al escribirla: hablar solo de las fechas de cobro de las suscripciones.
+- Texto puesto con la opción recomendada (solo fechas de cobro), **pendiente de aprobación del
+  usuario**: título "Optimización de ciclo sugerida"; "Se te juntan cobros el día 20 / los días 5 y 20.
+  Si prefieres repartir el gasto durante el mes, revisa si alguno de esos servicios te deja cambiar la
+  fecha de cobro." Cambiarlo es tocar `ui.cycle_tip.*` en `es.ts`.
+
+## Dudas resueltas
+- Cuándo hay concentración: un día del mes con 3 cobros o más entre los próximos 30 días
+  (`minChargesOnOneDay`, en `domain/cycleTip.ts`), contando el día en hora de Santiago.
 
 ## Tareas
-- [ ] [TASK-001 `CycleTip`](TASK-001-CYCLE-TIP.md)
-- [ ] [TASK-002 Conectar el hook con los componentes](TASK-002-CONTAINER-CYCLE-TIP.md)
+- [x] [TASK-001 `CycleTip`](TASK-001-CYCLE-TIP.md)
+- [x] [TASK-002 Conectar el hook con los componentes](TASK-002-CONTAINER-CYCLE-TIP.md)

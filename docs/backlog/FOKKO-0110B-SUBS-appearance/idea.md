@@ -21,9 +21,10 @@ clean architecture por feature (`features/profile/{domain,application,infrastruc
 ## Features afectadas
 - `frontend` (`features/profile`)
 
-## Dudas abiertas
-- Las filas post-MVP no se muestran, para no ofrecer lo que no funciona.
+## Dudas resueltas
+- `useThemePreference` en `lib/theme` (junto al botón de tema de acceso): aplica al instante, guarda en
+  `localStorage` y no llama a ningún endpoint. Selector con `SegmentedControl` dentro de Perfil.
 
 ## Tareas
-- [ ] [TASK-001 `AppearanceSelector`](TASK-001-APPEARANCE-SELECTOR.md)
-- [ ] [TASK-002 Conectar el hook con los componentes](TASK-002-CONTAINER-APPEARANCE.md)
+- [x] [TASK-001 `AppearanceSelector`](TASK-001-APPEARANCE-SELECTOR.md)
+- [x] [TASK-002 Conectar el hook con los componentes](TASK-002-CONTAINER-APPEARANCE.md)

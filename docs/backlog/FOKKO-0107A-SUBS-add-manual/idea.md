@@ -22,12 +22,17 @@ clean architecture por feature (`features/subscriptions/{domain,application,infr
 ## Features afectadas
 - `frontend` (`features/subscriptions`)
 
-## Dudas abiertas
-- El handoff deja abiertos categoría y moneda distinta de CLP: se propone no pedir categoría (YAGNI) y permitir CLP o USD.
+## Dudas resueltas
+- Sin categoría (YAGNI) y moneda CLP o USD (`SegmentedControl`), como se proponía.
+- Monto como se escribe en Chile: "9.990", "9990" o "19,99" (`amountToCents`); "9.99" no es válido
+  (punto de miles con dos dígitos).
+- Textos del handoff ajustados al MVP: "Para cobros que no aparecen en tu cartola." (no "por correo");
+  sin "Si cambia de monto, te avisaremos": una manual no tiene cobros que detecten un alza.
+- La revisión visual a 390 y 1280 px (TASK-002) queda con el resto de la revisión visual pendiente.
 
 ## Tareas
-- [ ] [TASK-001A Errores de los campos del formulario](TASK-001A-FORM-FIELDS.md)
-- [ ] [TASK-001B Tipo con `z.infer`](TASK-001B-FORM-TYPE.md)
-- [ ] [TASK-002 Agregar una manual](TASK-002-ADD-MANUAL-FORM.md)
-- [ ] [TASK-003 Crear la manual por HTTP](TASK-003-GATEWAY-ADD-MANUAL.md)
-- [ ] [TASK-004 Conectar el hook con los componentes](TASK-004-CONTAINER-ADD-MANUAL.md)
+- [x] [TASK-001A Errores de los campos del formulario](TASK-001A-FORM-FIELDS.md)
+- [x] [TASK-001B Tipo con `z.infer`](TASK-001B-FORM-TYPE.md)
+- [x] [TASK-002 Agregar una manual](TASK-002-ADD-MANUAL-FORM.md)
+- [x] [TASK-003 Crear la manual por HTTP](TASK-003-GATEWAY-ADD-MANUAL.md)
+- [x] [TASK-004 Conectar el hook con los componentes](TASK-004-CONTAINER-ADD-MANUAL.md)

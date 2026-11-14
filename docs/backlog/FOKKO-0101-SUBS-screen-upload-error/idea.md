@@ -20,11 +20,16 @@ clean architecture por feature (`features/statements/{domain,application,infrast
 - `frontend` (`features/statements`)
 
 ## Dudas abiertas
-- Ninguna.
+- Resuelta: Error es el tercer estado de `/fuente` (con el formulario y Cargando). El título sale
+  del tipo de falla (`failureKindOf`: banco, cartola repetida, archivo, no se pudo leer) y el
+  mensaje de la llave; una llave desconocida usa el genérico. "Elegir el banco" conserva el archivo;
+  "Elegir otro archivo" lo vacía. `statements.billing_date_required` no va a Error: se corrige en
+  el mismo formulario.
+- Resuelta: sin "Reenviar correos de cobro" ni "contáctanos desde Fuentes" (post-MVP).
 
 ## Tareas
-- [ ] [TASK-001 Pantalla de error](TASK-001-UPLOAD-ERROR-SCREEN.md)
-- [ ] [TASK-002A Mensajes de banco o cartola repetida](TASK-002A-ERRMSG-BANK-IMPORTED.md)
-- [ ] [TASK-002B Mensajes de archivo](TASK-002B-ERRMSG-FILE.md)
-- [ ] [TASK-002C Mensaje genérico](TASK-002C-ERRMSG-UNKNOWN.md)
-- [ ] [TASK-003 Conectar el hook con los componentes](TASK-003-CONTAINER-UPLOAD-ERROR.md)
+- [x] [TASK-001 Pantalla de error](TASK-001-UPLOAD-ERROR-SCREEN.md)
+- [x] [TASK-002A Mensajes de banco o cartola repetida](TASK-002A-ERRMSG-BANK-IMPORTED.md)
+- [x] [TASK-002B Mensajes de archivo](TASK-002B-ERRMSG-FILE.md)
+- [x] [TASK-002C Mensaje genérico](TASK-002C-ERRMSG-UNKNOWN.md)
+- [x] [TASK-003 Conectar el hook con los componentes](TASK-003-CONTAINER-UPLOAD-ERROR.md)

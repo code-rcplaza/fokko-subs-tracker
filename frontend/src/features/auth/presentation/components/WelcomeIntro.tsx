@@ -21,7 +21,7 @@ export function WelcomeIntro({ firstName, onNavigate }: WelcomeIntroProps) {
   return (
     <div className="flex flex-1 flex-col px-6 pt-8 md:px-0 md:pt-0">
       <div className="flex flex-col gap-4">
-        <p className="text-sm font-semibold text-accent">{t("ui.welcome.greeting", { name: firstName })}</p>
+        <p className="text-sm font-semibold text-accent">{t("ui.greeting", { name: firstName })}</p>
         <h1 className="text-4xl leading-tight font-semibold tracking-[-0.02em] text-ink md:text-[44px]">
           {t("ui.welcome.title")}
         </h1>

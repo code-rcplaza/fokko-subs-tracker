@@ -47,9 +47,16 @@ export interface WriteRequest {
   readonly body?: unknown;
 }
 
+/** A file the API answers as an attachment, with the name it gave it. */
+export interface DownloadedFile {
+  readonly blob: Blob;
+  readonly filename: string;
+}
+
 export interface ApiClient {
   get(path: string): Promise<unknown>;
   send(request: WriteRequest): Promise<unknown>;
+  getFile(path: string): Promise<DownloadedFile>;
 }
 
 type FetchFunction = (input: string, init: RequestInit) => Promise<Response>;
@@ -115,20 +122,37 @@ function bodyOf(body: unknown): RequestInit {
   return { body: JSON.stringify(body), headers: { "Content-Type": "application/json" } };
 }
 
+const filenamePattern = /filename="([^"]+)"/;
+
+/** The name of `Content-Disposition: attachment; filename="…"`, or a fallback. */
+function filenameOf(response: Response, fallback: string): string {
+  return filenamePattern.exec(response.headers.get("Content-Disposition") ?? "")?.[1] ?? fallback;
+}
+
+async function fileOf(response: Response, path: string): Promise<DownloadedFile> {
+  if (!response.ok) {
+    const read = await readJSON(response);
+    throw read.ok
+      ? errorFrom(response.status, read.body)
+      : new ApiError({ status: response.status, key: internalKey });
+  }
+  const fallback = path.split("?")[0]?.split("/").pop() ?? "archivo";
+  return { blob: await response.blob(), filename: filenameOf(response, fallback) };
+}
+
 export function createApiClient(fetchFunction: FetchFunction): ApiClient {
-  async function request(path: string, init: RequestInit): Promise<unknown> {
-    let response: Response;
+  async function respond(path: string, init: RequestInit): Promise<Response> {
     try {
       // Same origin: the session cookie goes along and the browser sets its own Origin.
-      response = await fetchFunction(path, { credentials: "same-origin", mode: "same-origin", ...init });
+      return await fetchFunction(path, { credentials: "same-origin", mode: "same-origin", ...init });
     } catch (cause) {
       throw new NetworkError(cause);
     }
-    return answerOf(response);
   }
 
   return {
-    get: (path) => request(path, { method: "GET" }),
-    send: ({ method, path, body }) => request(path, { method, ...bodyOf(body) }),
+    get: async (path) => answerOf(await respond(path, { method: "GET" })),
+    send: async ({ method, path, body }) => answerOf(await respond(path, { method, ...bodyOf(body) })),
+    getFile: async (path) => fileOf(await respond(path, { method: "GET" }), path),
   };
 }

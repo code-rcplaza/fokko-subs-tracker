@@ -18,7 +18,16 @@ import { Route as GuestRegistroRouteImport } from './routes/_guest/registro'
 import { Route as SessionBienvenidaRouteImport } from './routes/_session/bienvenida'
 import { Route as SessionFuenteRouteImport } from './routes/_session/fuente'
 import { Route as SessionResumenRouteImport } from './routes/_session/resumen'
+import { Route as SessionRevisionRouteImport } from './routes/_session/revision'
+import { Route as SessionAlertaLineKeyRouteImport } from './routes/_session/alerta/$lineKey'
 import { Route as SessionAnalisisIdRouteImport } from './routes/_session/analisis/$id'
+import { Route as SessionPerfilIndexRouteImport } from './routes/_session/perfil/index'
+import { Route as SessionPerfilEliminarRouteImport } from './routes/_session/perfil/eliminar'
+import { Route as SessionSubsIndexRouteImport } from './routes/_session/subs/index'
+import { Route as SessionSubsAgregarRouteImport } from './routes/_session/subs/agregar'
+import { Route as SessionSubsLineKeyIndexRouteImport } from './routes/_session/subs/$lineKey/index'
+import { Route as SessionSubsLineKeyCancelarRouteImport } from './routes/_session/subs/$lineKey/cancelar'
+import { Route as SessionSubsLineKeyEditarRouteImport } from './routes/_session/subs/$lineKey/editar'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -63,11 +72,58 @@ const SessionResumenRoute = SessionResumenRouteImport.update({
   path: '/resumen',
   getParentRoute: () => SessionRoute,
 } as any)
+const SessionRevisionRoute = SessionRevisionRouteImport.update({
+  id: '/revision',
+  path: '/revision',
+  getParentRoute: () => SessionRoute,
+} as any)
+const SessionAlertaLineKeyRoute = SessionAlertaLineKeyRouteImport.update({
+  id: '/alerta/$lineKey',
+  path: '/alerta/$lineKey',
+  getParentRoute: () => SessionRoute,
+} as any)
 const SessionAnalisisIdRoute = SessionAnalisisIdRouteImport.update({
   id: '/analisis/$id',
   path: '/analisis/$id',
   getParentRoute: () => SessionRoute,
 } as any)
+const SessionPerfilIndexRoute = SessionPerfilIndexRouteImport.update({
+  id: '/perfil/',
+  path: '/perfil/',
+  getParentRoute: () => SessionRoute,
+} as any)
+const SessionPerfilEliminarRoute = SessionPerfilEliminarRouteImport.update({
+  id: '/perfil/eliminar',
+  path: '/perfil/eliminar',
+  getParentRoute: () => SessionRoute,
+} as any)
+const SessionSubsIndexRoute = SessionSubsIndexRouteImport.update({
+  id: '/subs/',
+  path: '/subs/',
+  getParentRoute: () => SessionRoute,
+} as any)
+const SessionSubsAgregarRoute = SessionSubsAgregarRouteImport.update({
+  id: '/subs/agregar',
+  path: '/subs/agregar',
+  getParentRoute: () => SessionRoute,
+} as any)
+const SessionSubsLineKeyIndexRoute = SessionSubsLineKeyIndexRouteImport.update({
+  id: '/subs/$lineKey/',
+  path: '/subs/$lineKey/',
+  getParentRoute: () => SessionRoute,
+} as any)
+const SessionSubsLineKeyCancelarRoute =
+  SessionSubsLineKeyCancelarRouteImport.update({
+    id: '/subs/$lineKey/cancelar',
+    path: '/subs/$lineKey/cancelar',
+    getParentRoute: () => SessionRoute,
+  } as any)
+const SessionSubsLineKeyEditarRoute =
+  SessionSubsLineKeyEditarRouteImport.update({
+    id: '/subs/$lineKey/editar',
+    path: '/subs/$lineKey/editar',
+    getParentRoute: () => SessionRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -77,7 +133,16 @@ export interface FileRoutesByFullPath {
   '/bienvenida': typeof SessionBienvenidaRoute
   '/fuente': typeof SessionFuenteRoute
   '/resumen': typeof SessionResumenRoute
+  '/revision': typeof SessionRevisionRoute
+  '/alerta/$lineKey': typeof SessionAlertaLineKeyRoute
   '/analisis/$id': typeof SessionAnalisisIdRoute
+  '/perfil/eliminar': typeof SessionPerfilEliminarRoute
+  '/subs/agregar': typeof SessionSubsAgregarRoute
+  '/perfil/': typeof SessionPerfilIndexRoute
+  '/subs/': typeof SessionSubsIndexRoute
+  '/subs/$lineKey/cancelar': typeof SessionSubsLineKeyCancelarRoute
+  '/subs/$lineKey/editar': typeof SessionSubsLineKeyEditarRoute
+  '/subs/$lineKey/': typeof SessionSubsLineKeyIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -87,7 +152,16 @@ export interface FileRoutesByTo {
   '/bienvenida': typeof SessionBienvenidaRoute
   '/fuente': typeof SessionFuenteRoute
   '/resumen': typeof SessionResumenRoute
+  '/revision': typeof SessionRevisionRoute
+  '/alerta/$lineKey': typeof SessionAlertaLineKeyRoute
   '/analisis/$id': typeof SessionAnalisisIdRoute
+  '/perfil/eliminar': typeof SessionPerfilEliminarRoute
+  '/subs/agregar': typeof SessionSubsAgregarRoute
+  '/perfil': typeof SessionPerfilIndexRoute
+  '/subs': typeof SessionSubsIndexRoute
+  '/subs/$lineKey/cancelar': typeof SessionSubsLineKeyCancelarRoute
+  '/subs/$lineKey/editar': typeof SessionSubsLineKeyEditarRoute
+  '/subs/$lineKey': typeof SessionSubsLineKeyIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -100,7 +174,16 @@ export interface FileRoutesById {
   '/_session/bienvenida': typeof SessionBienvenidaRoute
   '/_session/fuente': typeof SessionFuenteRoute
   '/_session/resumen': typeof SessionResumenRoute
+  '/_session/revision': typeof SessionRevisionRoute
+  '/_session/alerta/$lineKey': typeof SessionAlertaLineKeyRoute
   '/_session/analisis/$id': typeof SessionAnalisisIdRoute
+  '/_session/perfil/eliminar': typeof SessionPerfilEliminarRoute
+  '/_session/subs/agregar': typeof SessionSubsAgregarRoute
+  '/_session/perfil/': typeof SessionPerfilIndexRoute
+  '/_session/subs/': typeof SessionSubsIndexRoute
+  '/_session/subs/$lineKey/cancelar': typeof SessionSubsLineKeyCancelarRoute
+  '/_session/subs/$lineKey/editar': typeof SessionSubsLineKeyEditarRoute
+  '/_session/subs/$lineKey/': typeof SessionSubsLineKeyIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -112,7 +195,16 @@ export interface FileRouteTypes {
     | '/bienvenida'
     | '/fuente'
     | '/resumen'
+    | '/revision'
+    | '/alerta/$lineKey'
     | '/analisis/$id'
+    | '/perfil/eliminar'
+    | '/subs/agregar'
+    | '/perfil/'
+    | '/subs/'
+    | '/subs/$lineKey/cancelar'
+    | '/subs/$lineKey/editar'
+    | '/subs/$lineKey/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -122,7 +214,16 @@ export interface FileRouteTypes {
     | '/bienvenida'
     | '/fuente'
     | '/resumen'
+    | '/revision'
+    | '/alerta/$lineKey'
     | '/analisis/$id'
+    | '/perfil/eliminar'
+    | '/subs/agregar'
+    | '/perfil'
+    | '/subs'
+    | '/subs/$lineKey/cancelar'
+    | '/subs/$lineKey/editar'
+    | '/subs/$lineKey'
   id:
     | '__root__'
     | '/'
@@ -134,7 +235,16 @@ export interface FileRouteTypes {
     | '/_session/bienvenida'
     | '/_session/fuente'
     | '/_session/resumen'
+    | '/_session/revision'
+    | '/_session/alerta/$lineKey'
     | '/_session/analisis/$id'
+    | '/_session/perfil/eliminar'
+    | '/_session/subs/agregar'
+    | '/_session/perfil/'
+    | '/_session/subs/'
+    | '/_session/subs/$lineKey/cancelar'
+    | '/_session/subs/$lineKey/editar'
+    | '/_session/subs/$lineKey/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -209,11 +319,74 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SessionResumenRouteImport
       parentRoute: typeof SessionRoute
     }
+    '/_session/revision': {
+      id: '/_session/revision'
+      path: '/revision'
+      fullPath: '/revision'
+      preLoaderRoute: typeof SessionRevisionRouteImport
+      parentRoute: typeof SessionRoute
+    }
+    '/_session/alerta/$lineKey': {
+      id: '/_session/alerta/$lineKey'
+      path: '/alerta/$lineKey'
+      fullPath: '/alerta/$lineKey'
+      preLoaderRoute: typeof SessionAlertaLineKeyRouteImport
+      parentRoute: typeof SessionRoute
+    }
     '/_session/analisis/$id': {
       id: '/_session/analisis/$id'
       path: '/analisis/$id'
       fullPath: '/analisis/$id'
       preLoaderRoute: typeof SessionAnalisisIdRouteImport
+      parentRoute: typeof SessionRoute
+    }
+    '/_session/perfil/': {
+      id: '/_session/perfil/'
+      path: '/perfil'
+      fullPath: '/perfil/'
+      preLoaderRoute: typeof SessionPerfilIndexRouteImport
+      parentRoute: typeof SessionRoute
+    }
+    '/_session/perfil/eliminar': {
+      id: '/_session/perfil/eliminar'
+      path: '/perfil/eliminar'
+      fullPath: '/perfil/eliminar'
+      preLoaderRoute: typeof SessionPerfilEliminarRouteImport
+      parentRoute: typeof SessionRoute
+    }
+    '/_session/subs/': {
+      id: '/_session/subs/'
+      path: '/subs'
+      fullPath: '/subs/'
+      preLoaderRoute: typeof SessionSubsIndexRouteImport
+      parentRoute: typeof SessionRoute
+    }
+    '/_session/subs/agregar': {
+      id: '/_session/subs/agregar'
+      path: '/subs/agregar'
+      fullPath: '/subs/agregar'
+      preLoaderRoute: typeof SessionSubsAgregarRouteImport
+      parentRoute: typeof SessionRoute
+    }
+    '/_session/subs/$lineKey/': {
+      id: '/_session/subs/$lineKey/'
+      path: '/subs/$lineKey'
+      fullPath: '/subs/$lineKey/'
+      preLoaderRoute: typeof SessionSubsLineKeyIndexRouteImport
+      parentRoute: typeof SessionRoute
+    }
+    '/_session/subs/$lineKey/cancelar': {
+      id: '/_session/subs/$lineKey/cancelar'
+      path: '/subs/$lineKey/cancelar'
+      fullPath: '/subs/$lineKey/cancelar'
+      preLoaderRoute: typeof SessionSubsLineKeyCancelarRouteImport
+      parentRoute: typeof SessionRoute
+    }
+    '/_session/subs/$lineKey/editar': {
+      id: '/_session/subs/$lineKey/editar'
+      path: '/subs/$lineKey/editar'
+      fullPath: '/subs/$lineKey/editar'
+      preLoaderRoute: typeof SessionSubsLineKeyEditarRouteImport
       parentRoute: typeof SessionRoute
     }
   }
@@ -235,14 +408,32 @@ interface SessionRouteChildren {
   SessionBienvenidaRoute: typeof SessionBienvenidaRoute
   SessionFuenteRoute: typeof SessionFuenteRoute
   SessionResumenRoute: typeof SessionResumenRoute
+  SessionRevisionRoute: typeof SessionRevisionRoute
+  SessionAlertaLineKeyRoute: typeof SessionAlertaLineKeyRoute
   SessionAnalisisIdRoute: typeof SessionAnalisisIdRoute
+  SessionPerfilEliminarRoute: typeof SessionPerfilEliminarRoute
+  SessionSubsAgregarRoute: typeof SessionSubsAgregarRoute
+  SessionPerfilIndexRoute: typeof SessionPerfilIndexRoute
+  SessionSubsIndexRoute: typeof SessionSubsIndexRoute
+  SessionSubsLineKeyCancelarRoute: typeof SessionSubsLineKeyCancelarRoute
+  SessionSubsLineKeyEditarRoute: typeof SessionSubsLineKeyEditarRoute
+  SessionSubsLineKeyIndexRoute: typeof SessionSubsLineKeyIndexRoute
 }
 
 const SessionRouteChildren: SessionRouteChildren = {
   SessionBienvenidaRoute: SessionBienvenidaRoute,
   SessionFuenteRoute: SessionFuenteRoute,
   SessionResumenRoute: SessionResumenRoute,
+  SessionRevisionRoute: SessionRevisionRoute,
+  SessionAlertaLineKeyRoute: SessionAlertaLineKeyRoute,
   SessionAnalisisIdRoute: SessionAnalisisIdRoute,
+  SessionPerfilEliminarRoute: SessionPerfilEliminarRoute,
+  SessionSubsAgregarRoute: SessionSubsAgregarRoute,
+  SessionPerfilIndexRoute: SessionPerfilIndexRoute,
+  SessionSubsIndexRoute: SessionSubsIndexRoute,
+  SessionSubsLineKeyCancelarRoute: SessionSubsLineKeyCancelarRoute,
+  SessionSubsLineKeyEditarRoute: SessionSubsLineKeyEditarRoute,
+  SessionSubsLineKeyIndexRoute: SessionSubsLineKeyIndexRoute,
 }
 
 const SessionRouteWithChildren =

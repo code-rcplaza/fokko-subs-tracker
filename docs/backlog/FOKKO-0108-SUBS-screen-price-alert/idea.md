@@ -19,12 +19,16 @@ clean architecture por feature (`features/subscriptions/{domain,application,infr
 ## Features afectadas
 - `frontend` (`features/subscriptions`)
 
-## Dudas abiertas
-- Ninguna.
+## Dudas resueltas
+- Alerta lee el detalle de la línea (`GET /api/subscriptions/line`, FOKKO-0120-SUBS); sin alza muestra
+  `subscriptions.rise_not_found`.
+- Fuera del handoff por ser post-MVP: "Lo detectamos en un correo…", "Te avisamos 2 días antes…",
+  "Decidir más tarde" y la proyección del gasto mensual.
+- USD: cada monto lleva "≈ $X" al tipo de cambio con que se convirtió la línea (`approxPesosOf`).
 
 ## Tareas
-- [ ] [TASK-001 `PriceAlertCard`](TASK-001-PRICE-ALERT-CARD.md)
-- [ ] [TASK-002 Mantener](TASK-002-ALERT-KEEP.md)
-- [ ] [TASK-003 Ir a cancelar](TASK-003-ALERT-GO-CANCEL.md)
-- [ ] [TASK-004 Enviar la decisión de alza por HTTP](TASK-004-GATEWAY-PRICE-ALERT.md)
-- [ ] [TASK-005 Conectar el hook con los componentes](TASK-005-CONTAINER-PRICE-ALERT.md)
+- [x] [TASK-001 `PriceAlertCard`](TASK-001-PRICE-ALERT-CARD.md)
+- [x] [TASK-002 Mantener](TASK-002-ALERT-KEEP.md)
+- [x] [TASK-003 Ir a cancelar](TASK-003-ALERT-GO-CANCEL.md)
+- [x] [TASK-004 Enviar la decisión de alza por HTTP](TASK-004-GATEWAY-PRICE-ALERT.md)
+- [x] [TASK-005 Conectar el hook con los componentes](TASK-005-CONTAINER-PRICE-ALERT.md)

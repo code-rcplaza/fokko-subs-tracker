@@ -5,6 +5,7 @@ import { serverMessageOf } from "../../../lib/api/serverErrors";
 import { useGateways } from "../../../lib/gateways/GatewaysProvider";
 import { translateServerKey } from "../../../lib/i18n/translate";
 import { billingDateToUnix, fileProblemOf, type UploadInput, type UploadResult } from "../domain/upload";
+import { type FailureKind, failureKindOf, keepsFileAfter } from "../domain/uploadFailure";
 
 /** Análisis reads what the upload answered from here. */
 export function uploadedStatementKey(id: string) {
@@ -32,6 +33,19 @@ function inputOf(
   };
 }
 
+/** What the error screen shows: the kind decides title and action; the message comes from the key. */
+export interface UploadFailure {
+  readonly kind: FailureKind;
+  readonly message: string;
+}
+
+function failureOf(caught: unknown): UploadFailure {
+  return {
+    kind: caught instanceof ApiError ? failureKindOf(caught.key) : "unreadable",
+    message: serverMessageOf(caught),
+  };
+}
+
 /** Elegir fuente: a checked PDF, an optional bank and, if the statement lacks it, the billing date. */
 export function useUploadStatement({ onUploaded }: UseUploadStatementOptions) {
   const { statements } = useGateways();
@@ -42,6 +56,7 @@ export function useUploadStatement({ onUploaded }: UseUploadStatementOptions) {
   const [billingDateText, setBillingDateText] = useState("");
   const [needsBillingDate, setNeedsBillingDate] = useState(false);
   const [error, setError] = useState<string | undefined>(undefined);
+  const [failure, setFailure] = useState<UploadFailure | undefined>(undefined);
 
   const uploading = useMutation({
     mutationFn: (input: UploadInput) => statements.upload(input),
@@ -51,10 +66,13 @@ export function useUploadStatement({ onUploaded }: UseUploadStatementOptions) {
       onUploaded(result);
     },
     onError: (caught) => {
-      setNeedsBillingDate(
-        (already) => already || (caught instanceof ApiError && caught.key === billingDateRequired),
-      );
-      setError(serverMessageOf(caught));
+      // A missing billing date is fixed in the form itself; the rest goes to the error screen.
+      if (caught instanceof ApiError && caught.key === billingDateRequired) {
+        setNeedsBillingDate(true);
+        setError(serverMessageOf(caught));
+        return;
+      }
+      setFailure(failureOf(caught));
     },
   });
 
@@ -77,7 +95,17 @@ export function useUploadStatement({ onUploaded }: UseUploadStatementOptions) {
     uploading.mutate(inputOf(file, { bank, billingDate: needsBillingDate ? billingDate : undefined }));
   }
 
+  /** Back to Elegir fuente; the file stays only when the bank is what was missing. */
+  function tryAgain() {
+    if (failure !== undefined && !keepsFileAfter(failure.kind)) {
+      setFile(undefined);
+    }
+    setFailure(undefined);
+  }
+
   return {
+    failure,
+    tryAgain,
     file,
     fileError,
     pick,

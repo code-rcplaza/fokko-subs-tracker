@@ -19,17 +19,23 @@ clean architecture por feature (`features/subscriptions/{domain,application,infr
 ## Features afectadas
 - `frontend` (`features/subscriptions`)
 
-## Dudas abiertas
-- Ninguna.
+## Dudas resueltas
+- El reparto por servicio lo calculaba el back pero no salía en `GET /api/summary`: se agregó
+  `spend` en FOKKO-0119-SUBS, para no repetir la regla en el front.
+- "Subir cartola" (TASK-007) en vez de "Traer mis cobros" del handoff: el MVP es solo cartola.
+  "Ver mis fuentes" queda fuera (Fuentes es post-MVP).
+- Rutas a las que llevan las filas, aún sin pantalla: Detalle `/subs/<lineKey>` (FOKKO-0106A-SUBS)
+  y Alerta `/alerta/<lineKey>` (FOKKO-0108-SUBS). "Ver todos" lleva a `/subs`.
+- "Hola, {name}" pasó a una sola llave (`ui.greeting`), compartida con Bienvenida.
 
 ## Tareas
-- [ ] [TASK-001 `SpendHero`](TASK-001-SPEND-HERO.md)
-- [ ] [TASK-002 `ServiceLegend`](TASK-002-SERVICE-LEGEND.md)
-- [ ] [TASK-003 Cobros del mes](TASK-003-MONTH-COUNTS.md)
-- [ ] [TASK-004 `NextChargeRow`](TASK-004-NEXT-CHARGE-ROW.md)
-- [ ] [TASK-005 `PendingActionsList`](TASK-005-PENDING-ACTIONS-LIST.md)
-- [ ] [TASK-006 `UpcomingChargesList`](TASK-006-UPCOMING-CHARGES-LIST.md)
-- [ ] [TASK-007 Resumen vacío](TASK-007-SUMMARY-EMPTY.md)
-- [ ] [TASK-008 Leer el resumen](TASK-008-HOOK-SUMMARY.md)
-- [ ] [TASK-009 Leer el resumen por HTTP](TASK-009-GATEWAY-SUMMARY.md)
-- [ ] [TASK-010 Conectar el hook con los componentes](TASK-010-CONTAINER-SUMMARY.md)
+- [x] [TASK-001 `SpendHero`](TASK-001-SPEND-HERO.md)
+- [x] [TASK-002 `ServiceLegend`](TASK-002-SERVICE-LEGEND.md)
+- [x] [TASK-003 Cobros del mes](TASK-003-MONTH-COUNTS.md)
+- [x] [TASK-004 `NextChargeRow`](TASK-004-NEXT-CHARGE-ROW.md)
+- [x] [TASK-005 `PendingActionsList`](TASK-005-PENDING-ACTIONS-LIST.md)
+- [x] [TASK-006 `UpcomingChargesList`](TASK-006-UPCOMING-CHARGES-LIST.md)
+- [x] [TASK-007 Resumen vacío](TASK-007-SUMMARY-EMPTY.md)
+- [x] [TASK-008 Leer el resumen](TASK-008-HOOK-SUMMARY.md)
+- [x] [TASK-009 Leer el resumen por HTTP](TASK-009-GATEWAY-SUMMARY.md)
+- [x] [TASK-010 Conectar el hook con los componentes](TASK-010-CONTAINER-SUMMARY.md)

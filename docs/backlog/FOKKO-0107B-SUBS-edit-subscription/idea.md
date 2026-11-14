@@ -22,11 +22,19 @@ clean architecture por feature (`features/subscriptions/{domain,application,infr
 ## Features afectadas
 - `frontend` (`features/subscriptions`)
 
-## Dudas abiertas
-- El handoff deja abiertos categoría y moneda distinta de CLP: se propone no pedir categoría (YAGNI) y permitir CLP o USD.
+## Dudas resueltas
+- Sin categoría; CLP o USD solo en las manuales (una línea detectada mantiene su moneda).
+- Línea detectada: alias (vacío lo borra) y override; solo se envía lo que cambió, y el override va
+  con monto y día juntos para que uno no deshaga el otro.
+- Desde Revisión (`/subs/<lineKey>/editar?desde=revision`) la línea aún es posible y no tiene
+  Detalle: se toma de la lista de posibles y al guardar vuelve a `/revision`. La tarjeta de Revisión
+  ganó el enlace "Editar nombre o monto".
+- Manual (`manual:<publicId>`): el mismo formulario de Agregar (`useManualForm`, compartido) con PUT,
+  y "Quitar" con `ConfirmDialog` y DELETE; luego vuelve a Subs.
+- La ruta de Detalle pasó a `subs/$lineKey/index.tsx` para que Editar no quede anidada en ella.
 
 ## Tareas
-- [ ] [TASK-001 Editar una línea detectada](TASK-001-EDIT-LINE-FORM.md)
-- [ ] [TASK-002 Editar o quitar una manual](TASK-002-EDIT-MANUAL-FORM.md)
-- [ ] [TASK-003 Editar por HTTP](TASK-003-GATEWAY-EDIT.md)
-- [ ] [TASK-004 Conectar el hook con los componentes](TASK-004-CONTAINER-EDIT.md)
+- [x] [TASK-001 Editar una línea detectada](TASK-001-EDIT-LINE-FORM.md)
+- [x] [TASK-002 Editar o quitar una manual](TASK-002-EDIT-MANUAL-FORM.md)
+- [x] [TASK-003 Editar por HTTP](TASK-003-GATEWAY-EDIT.md)
+- [x] [TASK-004 Conectar el hook con los componentes](TASK-004-CONTAINER-EDIT.md)

@@ -139,7 +139,78 @@ describe("Upload screen", () => {
     expect(statements.upload).toHaveBeenCalledOnce();
   });
 
-  it("goes back to the form when the upload fails", async () => {
+  it.each([
+    [
+      "statements.already_imported",
+      409,
+      "Ya teníamos esta cartola",
+      "Esta cartola ya estaba cargada.",
+      "Elegir otro archivo",
+    ],
+    [
+      "statements.bank_not_detected",
+      422,
+      "No reconocimos el banco",
+      "No reconocimos el banco de la cartola. Elígelo tú.",
+      "Elegir el banco",
+    ],
+    [
+      "statements.file_too_large",
+      413,
+      "No pudimos leer este archivo",
+      "El archivo supera el máximo de 10 MB.",
+      "Elegir otro archivo",
+    ],
+    [
+      "statements.file_kind_unknown",
+      415,
+      "No pudimos leer este archivo",
+      "Sube la cartola en PDF.",
+      "Elegir otro archivo",
+    ],
+    [
+      "algo.desconocido",
+      400,
+      "No pudimos leer este archivo",
+      "Algo salió mal. Inténtalo de nuevo en un momento.",
+      "Elegir otro archivo",
+    ],
+  ])("shows the error screen for %s", async (key, status, title, message, action) => {
+    const statements = statementsWith({
+      upload: vi.fn(async () => Promise.reject(new ApiError({ status, key }))),
+    });
+    renderUpload(statements);
+
+    await chooseFile(pdf);
+    await userEvent.click(screen.getByRole("button", { name: "Analizar cartola" }));
+
+    expect(await screen.findByRole("heading", { name: title })).toBeInTheDocument();
+    expect(screen.getByText(message)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: action })).toBeInTheDocument();
+    expect(screen.getByText("Tu archivo no se guardó.")).toBeInTheDocument();
+    expect(screen.queryByText(/cartola\.pdf/)).not.toBeInTheDocument();
+  });
+
+  it("goes back to Elegir fuente with the file kept when the bank is what is missing", async () => {
+    const statements = statementsWith({
+      upload: vi
+        .fn()
+        .mockRejectedValueOnce(new ApiError({ status: 422, key: "statements.bank_not_detected" }))
+        .mockResolvedValue(uploaded),
+    });
+    renderUpload(statements);
+
+    await chooseFile(pdf);
+    await userEvent.click(screen.getByRole("button", { name: "Analizar cartola" }));
+    await userEvent.click(await screen.findByRole("button", { name: "Elegir el banco" }));
+
+    expect(screen.getByText("cartola.pdf")).toBeInTheDocument();
+    await userEvent.selectOptions(screen.getByLabelText("Banco"), "bci");
+    await userEvent.click(screen.getByRole("button", { name: "Analizar cartola" }));
+    await waitFor(() => expect(statements.upload).toHaveBeenLastCalledWith({ file: pdf, bank: "bci" }));
+  });
+
+  it("goes from the error back to an empty form with Elegir otro archivo", async () => {
     const statements = statementsWith({
       upload: vi.fn(async () => Promise.reject(new ApiError({ status: 422, key: "statements.no_charges" }))),
     });
@@ -149,6 +220,8 @@ describe("Upload screen", () => {
     await userEvent.click(screen.getByRole("button", { name: "Analizar cartola" }));
 
     expect(await screen.findByText("No encontramos cobros en esta cartola.")).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "Elegir otro archivo" }));
     expect(screen.getByLabelText("Archivo de la cartola")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Analizar cartola" })).toBeDisabled();
   });
 });
